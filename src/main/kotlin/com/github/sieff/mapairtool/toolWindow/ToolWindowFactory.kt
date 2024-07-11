@@ -1,23 +1,19 @@
 package com.github.sieff.mapairtool.toolWindow
 
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.sieff.mapairtool.MyBundle
-import com.github.sieff.mapairtool.services.MyProjectService
+import com.github.sieff.mapairtool.Bundle
+import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
+import com.github.sieff.mapairtool.toolWindow.chatHistory.ChatHistory
+import com.intellij.ui.components.JBTextField
 import javax.swing.JButton
 
 
-class MyToolWindowFactory : ToolWindowFactory {
-
-    init {
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
-    }
+class ToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val myToolWindow = MyToolWindow(toolWindow)
@@ -28,16 +24,17 @@ class MyToolWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
-
-        private val service = toolWindow.project.service<MyProjectService>()
+        private val inputService = toolWindow.project.service<InputHandlerService>()
+        private val chatHistory = ChatHistory(toolWindow.project)
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val label = JBLabel(MyBundle.message("randomLabel", "?"))
+            val textField = JBTextField(Bundle.message("inputLabel"), 20)
 
-            add(label)
-            add(JButton(MyBundle.message("shuffle")).apply {
+            add(chatHistory)
+            add(textField)
+            add(JButton(Bundle.message("sendMessage")).apply {
                 addActionListener {
-                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+                    inputService.handleInput(textField.getText())
                 }
             })
         }

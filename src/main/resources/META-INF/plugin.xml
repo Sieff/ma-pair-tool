@@ -2,17 +2,17 @@
 <idea-plugin>
     <id>com.github.sieff.mapairtool</id>
     <name>ma-pair-tool</name>
-    <vendor>sieff</vendor>
+    <vendor>Sieff</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <resource-bundle>messages.Bundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.sieff.mapairtool.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.sieff.mapairtool.toolWindow.ToolWindowFactory" id="Pair Tool" anchor="right" icon="/img/pluginIcon.svg"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.sieff.mapairtool.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.github.sieff.mapairtool.listeners.ApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
 </idea-plugin>
