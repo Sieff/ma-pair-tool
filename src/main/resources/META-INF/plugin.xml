@@ -9,7 +9,7 @@
     <resource-bundle>messages.Bundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.sieff.mapairtool.toolWindow.ToolWindowFactory" id="Pair Tool" anchor="right" icon="/img/pluginIcon.svg"/>
+        <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Pair Tool" anchor="right" icon="/img/pluginIcon.svg"/>
     </extensions>
 
     <applicationListeners>

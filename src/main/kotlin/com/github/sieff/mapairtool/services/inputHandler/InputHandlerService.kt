@@ -12,9 +12,9 @@ class InputHandlerService(project: Project): IInputHandlerService {
     private val chatMessageService = project.service<ChatMessageService>()
 
     override fun handleInput(input: String) {
-        agentService.postMessage(input)
-
         val message = Message(MessageOrigin.USER, input)
         chatMessageService.publishMessage(message)
+
+        agentService.postMessage(input)
     }
 }

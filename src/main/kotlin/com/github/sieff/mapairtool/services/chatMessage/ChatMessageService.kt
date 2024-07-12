@@ -7,11 +7,15 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 
 @Service(Service.Level.PROJECT)
-class ChatMessageService(project: Project): IChatMessageService, APublisher<MutableList<Message>>() {
+class ChatMessageService(project: Project): IChatMessageService, APublisher<Message>() {
     private val messages: MutableList<Message> = mutableListOf()
 
     override fun publishMessage(message: Message) {
         messages.add(message)
-        publish(messages)
+        publish(message)
+    }
+
+    override fun getMessages(): List<Message> {
+        return messages
     }
 }

@@ -1,16 +1,13 @@
-package com.github.sieff.mapairtool.toolWindow
+package com.github.sieff.mapairtool.ui.toolWindow
 
-import com.intellij.openapi.components.service
+import com.github.sieff.mapairtool.ui.toolWindow.chatHistory.ChatHistory
+import com.github.sieff.mapairtool.ui.toolWindow.textInput.TextInput
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.sieff.mapairtool.Bundle
-import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
-import com.github.sieff.mapairtool.toolWindow.chatHistory.ChatHistory
-import com.intellij.ui.components.JBTextField
-import javax.swing.JButton
+import java.awt.BorderLayout
 
 
 class ToolWindowFactory : ToolWindowFactory {
@@ -24,19 +21,14 @@ class ToolWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
-        private val inputService = toolWindow.project.service<InputHandlerService>()
         private val chatHistory = ChatHistory(toolWindow.project)
+        private val textInput = TextInput(toolWindow.project)
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val textField = JBTextField(Bundle.message("inputLabel"), 20)
+            layout = BorderLayout()
 
-            add(chatHistory)
-            add(textField)
-            add(JButton(Bundle.message("sendMessage")).apply {
-                addActionListener {
-                    inputService.handleInput(textField.getText())
-                }
-            })
+            add(chatHistory, BorderLayout.CENTER)
+            add(textInput, BorderLayout.SOUTH)
         }
     }
 }
