@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.awt.RelativePoint
 import java.awt.Component
 import java.awt.GraphicsEnvironment
@@ -31,6 +32,7 @@ class PopupAction : AnAction() {
 
             addMovableSupport(popup!!, popupComponent.panel)
             showPopupAtBottomCenter(popup!!)
+            Disposer.register(popup!!, popupComponent)
         }
     }
 
@@ -42,8 +44,6 @@ class PopupAction : AnAction() {
             override fun mousePressed(e: MouseEvent) {
                 mouseDownScreenCoords = e.locationOnScreen
                 mouseDownPopupCoords = popup.locationOnScreen
-                println(mouseDownScreenCoords)
-                println(mouseDownPopupCoords)
             }
 
             override fun mouseDragged(e: MouseEvent) {

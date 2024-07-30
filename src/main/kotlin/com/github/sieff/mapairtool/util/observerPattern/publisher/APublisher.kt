@@ -1,20 +1,20 @@
 package com.github.sieff.mapairtool.util.observerPattern.publisher
 
-import com.github.sieff.mapairtool.util.observerPattern.observer.IObserver
+import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
 
-abstract class APublisher<T> {
-    private val observers: MutableList<IObserver<T>> = mutableListOf()
+abstract class APublisher<T> : Publisher<T> {
+    private val observers: MutableList<Observer<T>> = mutableListOf()
 
-    fun subscribe(observer: IObserver<T>) {
+    override fun subscribe(observer: Observer<T>) {
         observers.add(observer)
     }
-    fun unsubscribe(observer: IObserver<T>) {
+    override fun unsubscribe(observer: Observer<T>) {
         observers.remove(observer)
     }
 
-    protected fun publish(message: T) {
+    override fun publish(data: T) {
         observers.forEach { observer ->
-            observer.notify(message)
+            observer.notify(data)
         }
     }
 }

@@ -1,5 +1,5 @@
 package com.github.sieff.mapairtool.util.observerPattern.observer
 
-interface IObserver<T> {
+interface Observer<T> {
     fun notify(message: T)
 }

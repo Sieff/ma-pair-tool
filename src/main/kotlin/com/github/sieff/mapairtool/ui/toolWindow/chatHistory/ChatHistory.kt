@@ -2,7 +2,7 @@ package com.github.sieff.mapairtool.ui.toolWindow.chatHistory
 
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
-import com.github.sieff.mapairtool.util.observerPattern.observer.IObserver
+import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.VerticalFlowLayout
@@ -11,7 +11,7 @@ import com.intellij.ui.components.JBScrollPane
 import javax.swing.*
 
 
-class ChatHistory(project: Project): JBPanel<ChatHistory>(), IObserver<Message> {
+class ChatHistory(project: Project): JBPanel<ChatHistory>(), Observer<Message> {
     private var messages: MutableList<Message> = mutableListOf()
     private val messagesPanel = JBPanel<JBPanel<*>>()
     private val chatMessageService = project.service<ChatMessageService>()

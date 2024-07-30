@@ -1,32 +1,33 @@
 package com.github.sieff.mapairtool.services.agent
 
-import com.github.sieff.mapairtool.settings.AppSettingsState
+import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.model.MessageOrigin
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
+import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.io.use
-import kotlin.text.toByteArray
+import java.util.concurrent.CompletableFuture
+import javax.swing.SwingUtilities
+
 
 class AgentServiceImpl(val project: Project): AgentService {
     private val chatMessageService = project.service<ChatMessageService>()
-    private val logger = Logger.getInstance(AgentServiceImpl::class.java)
 
     override fun postMessage(message: String) {
-        logger.info(message)
-        PopupInvoker.invokePopup(project)
-
-        val newThread = Thread {
-            chatMessageService.publishMessage(Message(MessageOrigin.AGENT, getUrlContents()))
+        CompletableFuture.supplyAsync {
+            getUrlContents()
+        }.thenAccept { result: String ->
+            SwingUtilities.invokeLater {
+                PopupInvoker.invokePopup(project)
+                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, result))
+            }
         }
-        newThread.start()
     }
 
     private fun getUrlContents(): String {
@@ -68,6 +69,9 @@ class AgentServiceImpl(val project: Project): AgentService {
             // Check if the response code is HTTP OK (200)
             val responseCode: Int = connection.getResponseCode()
             println("Response Code: $responseCode")
+            if (responseCode != 200) {
+                return Bundle.message("apiError")
+            }
 
             // Read the response from the input stream
             val `in` = BufferedReader(InputStreamReader(connection.getInputStream()))
@@ -84,6 +88,6 @@ class AgentServiceImpl(val project: Project): AgentService {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return "Unlucky"
+        return Bundle.message("unforeseenError")
     }
 }
