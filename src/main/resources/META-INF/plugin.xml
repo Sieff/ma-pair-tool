@@ -10,6 +10,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Pair Tool" anchor="right" icon="/img/pluginIcon.svg"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
+                id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
+                displayName="Pair Tool"/>
     </extensions>
 
     <applicationListeners>

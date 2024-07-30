@@ -1,5 +1,6 @@
 package com.github.sieff.mapairtool.services.inputHandler
 
+import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.model.MessageOrigin
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
@@ -45,7 +46,7 @@ class AgentService(val project: Project): IAgentService {
             // Set the request headers
             connection.setRequestProperty("Content-Type", "application/json")
             connection.setRequestProperty("Accept", "application/json")
-            connection.setRequestProperty("Authorization", "Bearer $OPENAI_API_KEY")
+            connection.setRequestProperty("Authorization", "Bearer ${AppSettingsState.getInstance().state.apiKey}")
 
             val body: String = "{\n" +
                     "    \"model\": \"gpt-4o-mini\",\n" +

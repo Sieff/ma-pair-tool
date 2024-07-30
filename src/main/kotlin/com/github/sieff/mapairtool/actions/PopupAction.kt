@@ -1,41 +1,78 @@
 package com.github.sieff.mapairtool.actions
 
+import com.github.sieff.mapairtool.ui.popup.PopupComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBPanel
-import com.intellij.ui.components.JBTextField
-import java.awt.BorderLayout
-import javax.swing.JButton
-import javax.swing.JOptionPane
+import com.intellij.ui.awt.RelativePoint
+import java.awt.Component
+import java.awt.GraphicsEnvironment
+import java.awt.Point
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 
 
 class PopupAction : AnAction() {
+    private lateinit var popupComponent: PopupComponent
+    private var popup: JBPopup? = null
+
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return
+        if (popup == null || !popup!!.isVisible) {
+            popupComponent = PopupComponent()
 
-        val panel: JBPanel<*> = JBPanel<JBPanel<*>>()
-        panel.layout = BorderLayout()
-        val label = JBLabel("My Popup :D")
-        val button = JButton("Does nothing")
+            popup = JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(popupComponent.panel, popupComponent.preferredFocusedComponent)
+                .setResizable(false)
+                .setMovable(true)
+                .setRequestFocus(false)
+                .setCancelOnClickOutside(false)
+                .setCancelOnOtherWindowOpen(false)
+                .createPopup()
 
-        panel.add(label, BorderLayout.CENTER)
-        panel.add(button, BorderLayout.SOUTH)
+            addMovableSupport(popup!!, popupComponent.panel)
+            showPopupAtBottomCenter(popup!!)
+        }
+    }
 
-        val popup = JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(panel, button)
-            .setResizable(true)
-            .setMovable(true)
-            .setRequestFocus(true)
-            .createPopup()
+    private fun addMovableSupport(popup: JBPopup, component: Component) {
+        val moveListener = object : MouseAdapter() {
+            private var mouseDownScreenCoords: Point? = null
+            private var mouseDownPopupCoords: Point? = null
 
-        popup.showCenteredInCurrentWindow(project)
+            override fun mousePressed(e: MouseEvent) {
+                mouseDownScreenCoords = e.locationOnScreen
+                mouseDownPopupCoords = popup.locationOnScreen
+                println(mouseDownScreenCoords)
+                println(mouseDownPopupCoords)
+            }
+
+            override fun mouseDragged(e: MouseEvent) {
+                if (mouseDownScreenCoords != null && mouseDownPopupCoords != null) {
+                    val mouseDraggedScreenCoords = e.locationOnScreen
+                    val newX = (mouseDownPopupCoords!!.x - mouseDownScreenCoords!!.x) + mouseDraggedScreenCoords.x
+                    val newY = (mouseDownPopupCoords!!.y - mouseDownScreenCoords!!.y) + mouseDraggedScreenCoords.y
+                    popup.setLocation(Point(newX, newY))
+                }
+            }
+        }
+        component.addMouseListener(moveListener)
+        component.addMouseMotionListener(moveListener)
+    }
+
+    private fun showPopupAtBottomCenter(popup: JBPopup) {
+        val screenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration.bounds
+        val popupSize = popup.content.size
+        val x = screenBounds.x + (screenBounds.width - popupSize.width) / 2
+        val y = screenBounds.y + screenBounds.height - popupSize.height - 100
+
+        popup.show(RelativePoint(Point(x, y)))
     }
 
     companion object {
-        fun  getId(): String{
-            return "com.github.sieff.mapairtool.actions.PopupAction"
+        fun  getId(): String {
+            return PopupAction::class.java.name
         }
     }
 }
