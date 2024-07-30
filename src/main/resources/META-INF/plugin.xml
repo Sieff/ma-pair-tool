@@ -5,6 +5,7 @@
     <vendor>Sieff</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 
     <resource-bundle>messages.Bundle</resource-bundle>
 

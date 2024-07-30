@@ -10,7 +10,7 @@ import javax.swing.JPanel
 
 class AppSettingsComponent {
     val panel: JPanel
-    private val apiKeyField = JBPasswordField()
+    private val apiKeyField = JBTextField()
 
     init {
         panel = FormBuilder.createFormBuilder()
@@ -24,7 +24,7 @@ class AppSettingsComponent {
 
     @get:NotNull
     var apiKeyText: String
-        get() = apiKeyField.password.toString()
+        get() = apiKeyField.text
         set(newText) {
             apiKeyField.text = newText
         }

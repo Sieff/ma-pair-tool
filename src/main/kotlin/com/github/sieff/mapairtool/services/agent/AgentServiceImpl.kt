@@ -3,11 +3,16 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.model.MessageOrigin
+import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletion
+import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
+import com.github.sieff.mapairtool.model.completionRequest.RequestMessage
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -24,8 +29,10 @@ class AgentServiceImpl(val project: Project): AgentService {
             getUrlContents()
         }.thenAccept { result: String ->
             SwingUtilities.invokeLater {
+                println(result)
+                val chatCompletion = Json.decodeFromString<ChatCompletion>(result)
                 PopupInvoker.invokePopup(project)
-                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, result))
+                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, chatCompletion.choices[0].message.content))
             }
         }
     }
@@ -42,24 +49,15 @@ class AgentServiceImpl(val project: Project): AgentService {
             connection.setRequestMethod("GET")
             connection.setDoOutput(true)
 
+            println(AppSettingsState.getInstance().state.apiKey)
+
             // Set the request headers
             connection.setRequestProperty("Content-Type", "application/json")
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Authorization", "Bearer ${AppSettingsState.getInstance().state.apiKey}")
 
-            val body: String = "{\n" +
-                    "    \"model\": \"gpt-4o-mini\",\n" +
-                    "    \"messages\": [\n" +
-                    "      {\n" +
-                    "        \"role\": \"system\",\n" +
-                    "        \"content\": \"You are a poetic assistant, skilled in explaining complex programming concepts with creative flair.\"\n" +
-                    "      },\n" +
-                    "      {\n" +
-                    "        \"role\": \"user\",\n" +
-                    "        \"content\": \"Compose a poem that explains the concept of recursion in programming.\"\n" +
-                    "      }\n" +
-                    "    ]\n" +
-                    "  }"
+            val body: String = Json.encodeToString(getRequest("gpt-4o-mini", chatMessageService.getMessages()))
+            println(body)
 
             connection.outputStream.use { os ->
                 val input: ByteArray = body.toByteArray(Charsets.UTF_8)
@@ -89,5 +87,20 @@ class AgentServiceImpl(val project: Project): AgentService {
             e.printStackTrace()
         }
         return Bundle.message("errors.unforeseenError")
+    }
+
+    fun getRequest(model: String, messages: List<Message>): CompletionRequest {
+        val requestMessages = messages.map {
+            val role: String = if (it.origin == MessageOrigin.AGENT) "assistant" else "user"
+            RequestMessage(it.message, role)
+        }.toMutableList()
+
+        requestMessages.add(0, getSystemMessage())
+
+        return CompletionRequest(model, requestMessages)
+    }
+
+    fun getSystemMessage(): RequestMessage {
+        return RequestMessage("You are a pair programming assistant that behaves like a human pair programming partner, so you don't know the implemented solution, but you can help the user with your knowledge.", "system")
     }
 }

@@ -4,6 +4,6 @@ import com.intellij.ui.JBColor
 import java.awt.Color
 
 enum class Colors(val color: JBColor) {
-    AGENT(JBColor("Agent", Color(0x616161))),
+    AGENT(JBColor("Agent", Color(0x00000000))),
     USER(JBColor("User", Color(0x009ED1)))
 }

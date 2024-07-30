@@ -11,7 +11,7 @@ import com.intellij.ui.components.JBScrollPane
 import javax.swing.*
 
 
-class ChatHistory(project: Project): JBPanel<ChatHistory>(), Observer<Message> {
+class ChatHistory(val project: Project): JBPanel<ChatHistory>(), Observer<Message> {
     private var messages: MutableList<Message> = mutableListOf()
     private val messagesPanel = JBPanel<JBPanel<*>>()
     private val chatMessageService = project.service<ChatMessageService>()
@@ -29,7 +29,7 @@ class ChatHistory(project: Project): JBPanel<ChatHistory>(), Observer<Message> {
     override fun notify(message: Message) {
         messages.add(message)
 
-        val chatMessage = ChatMessage(message)
+        val chatMessage = ChatMessage(message, project)
         messagesPanel.add(chatMessage)
         messagesPanel.revalidate()
         messagesPanel.repaint()
