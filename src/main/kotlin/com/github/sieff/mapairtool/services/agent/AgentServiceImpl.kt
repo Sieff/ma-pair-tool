@@ -70,7 +70,7 @@ class AgentServiceImpl(val project: Project): AgentService {
             val responseCode: Int = connection.getResponseCode()
             println("Response Code: $responseCode")
             if (responseCode != 200) {
-                return Bundle.message("apiError")
+                return Bundle.message("errors.apiError")
             }
 
             // Read the response from the input stream
@@ -88,6 +88,6 @@ class AgentServiceImpl(val project: Project): AgentService {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return Bundle.message("unforeseenError")
+        return Bundle.message("errors.unforeseenError")
     }
 }
