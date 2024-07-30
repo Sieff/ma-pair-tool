@@ -1,6 +1,6 @@
 package com.github.sieff.mapairtool.settings
 
-import com.github.sieff.mapairtool.util.singleton.Singleton
+import com.github.sieff.mapairtool.util.singletonPattern.Singleton
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State

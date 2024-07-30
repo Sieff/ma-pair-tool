@@ -3,7 +3,6 @@ package com.github.sieff.mapairtool.actions
 import com.github.sieff.mapairtool.ui.popup.PopupComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
@@ -20,15 +19,14 @@ class PopupAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         if (popup == null || !popup!!.isVisible) {
-            popupComponent = PopupComponent()
+            popupComponent = PopupComponent(e.project!!)
 
             popup = JBPopupFactory.getInstance()
                 .createComponentPopupBuilder(popupComponent.panel, popupComponent.preferredFocusedComponent)
                 .setResizable(false)
                 .setMovable(true)
-                .setRequestFocus(false)
+                .setRequestFocus(true)
                 .setCancelOnClickOutside(false)
-                .setCancelOnOtherWindowOpen(false)
                 .createPopup()
 
             addMovableSupport(popup!!, popupComponent.panel)

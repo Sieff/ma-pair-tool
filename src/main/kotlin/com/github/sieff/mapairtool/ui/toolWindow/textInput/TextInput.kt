@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.ui.toolWindow.textInput
 
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
+import com.github.sieff.mapairtool.services.inputHandler.InputHandlerServiceImpl
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBPanel

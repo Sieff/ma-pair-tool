@@ -1,6 +1,7 @@
 package com.github.sieff.mapairtool.ui.settings
 
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
@@ -9,7 +10,7 @@ import javax.swing.JPanel
 
 class AppSettingsComponent {
     val panel: JPanel
-    private val apiKeyField = JBTextField()
+    private val apiKeyField = JBPasswordField()
 
     init {
         panel = FormBuilder.createFormBuilder()
@@ -23,7 +24,7 @@ class AppSettingsComponent {
 
     @get:NotNull
     var apiKeyText: String
-        get() = apiKeyField.text
+        get() = apiKeyField.password.toString()
         set(newText) {
             apiKeyField.text = newText
         }

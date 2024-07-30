@@ -9,7 +9,7 @@ import com.github.sieff.mapairtool.actions.PopupAction
 object PopupInvoker {
 
     @JvmStatic
-    fun invokeMyPopup(project: Project) {
+    fun invokePopup(project: Project) {
         // Retrieve the action by its ID
         val action = ActionManager.getInstance().getAction(PopupAction.getId())
 

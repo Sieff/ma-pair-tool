@@ -1,4 +1,4 @@
-package com.github.sieff.mapairtool.util.singleton
+package com.github.sieff.mapairtool.util.singletonPattern
 
 open class Singleton<out T : Any>(private val creator: () -> T) {
     @Volatile

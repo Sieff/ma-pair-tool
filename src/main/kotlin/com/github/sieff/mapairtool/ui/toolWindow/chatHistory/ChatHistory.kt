@@ -1,7 +1,7 @@
 package com.github.sieff.mapairtool.ui.toolWindow.chatHistory
 
 import com.github.sieff.mapairtool.model.Message
-import com.github.sieff.mapairtool.services.inputHandler.ChatMessageService
+import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.util.observerPattern.observer.IObserver
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

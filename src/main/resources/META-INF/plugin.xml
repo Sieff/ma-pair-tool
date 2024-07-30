@@ -15,6 +15,16 @@
                 instance="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 displayName="Pair Tool"/>
+
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.agent.AgentService"
+                serviceImplementation="com.github.sieff.mapairtool.services.agent.AgentServiceImpl"/>
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.inputHandler.InputHandlerService"
+                serviceImplementation="com.github.sieff.mapairtool.services.inputHandler.InputHandlerServiceImpl"/>
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.chatMessage.ChatMessageService"
+                serviceImplementation="com.github.sieff.mapairtool.services.chatMessage.ChatMessageServiceImpl"/>
     </extensions>
 
     <applicationListeners>
