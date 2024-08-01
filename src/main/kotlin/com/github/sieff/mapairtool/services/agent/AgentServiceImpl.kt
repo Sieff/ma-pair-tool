@@ -4,6 +4,9 @@ import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.model.MessageOrigin
 import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletion
+import com.github.sieff.mapairtool.model.chatCompletion.Choice
+import com.github.sieff.mapairtool.model.chatCompletion.CompletionMessage
+import com.github.sieff.mapairtool.model.chatCompletion.Usage
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.github.sieff.mapairtool.model.completionRequest.RequestMessage
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
@@ -17,6 +20,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletableFuture
 import javax.swing.SwingUtilities
 
@@ -27,17 +31,15 @@ class AgentServiceImpl(val project: Project): AgentService {
     override fun postMessage(message: String) {
         CompletableFuture.supplyAsync {
             getUrlContents()
-        }.thenAccept { result: String ->
+        }.thenAccept { result: ChatCompletion ->
             SwingUtilities.invokeLater {
-                println(result)
-                val chatCompletion = Json.decodeFromString<ChatCompletion>(result)
                 PopupInvoker.invokePopup(project)
-                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, chatCompletion.choices[0].message.content))
+                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, result.choices[0].message.content))
             }
         }
     }
 
-    private fun getUrlContents(): String {
+    private fun getUrlContents(): ChatCompletion {
         try {
             // The URL of the server
             val url = URL("https://api.openai.com/v1/chat/completions")
@@ -68,11 +70,11 @@ class AgentServiceImpl(val project: Project): AgentService {
             val responseCode: Int = connection.getResponseCode()
             println("Response Code: $responseCode")
             if (responseCode != 200) {
-                return Bundle.message("errors.apiError")
+                return getErrorResponse(Bundle.message("errors.apiError"))
             }
 
             // Read the response from the input stream
-            val `in` = BufferedReader(InputStreamReader(connection.getInputStream()))
+            val `in` = BufferedReader(InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))
             var inputLine: String?
             val response = StringBuilder()
             while ((`in`.readLine().also { inputLine = it }) != null) {
@@ -82,11 +84,11 @@ class AgentServiceImpl(val project: Project): AgentService {
 
             // Print the response
             println(response.toString())
-            return response.toString()
+            return Json.decodeFromString<ChatCompletion>(response.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return Bundle.message("errors.unforeseenError")
+        return getErrorResponse(Bundle.message("errors.unforeseenError"))
     }
 
     fun getRequest(model: String, messages: List<Message>): CompletionRequest {
@@ -102,5 +104,11 @@ class AgentServiceImpl(val project: Project): AgentService {
 
     fun getSystemMessage(): RequestMessage {
         return RequestMessage("You are a pair programming assistant that behaves like a human pair programming partner, so you don't know the implemented solution, but you can help the user with your knowledge.", "system")
+    }
+
+    fun getErrorResponse(message: String): ChatCompletion {
+        val choices = ArrayList<Choice>()
+        choices.add(Choice(0, CompletionMessage("assistant", message), null, ""))
+        return ChatCompletion("", "", 0, "", "", choices, Usage(0, 0, 0))
     }
 }

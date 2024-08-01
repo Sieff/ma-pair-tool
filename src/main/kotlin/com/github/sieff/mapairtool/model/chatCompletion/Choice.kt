@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class Choice(
     val index: Int,
     val message: CompletionMessage,
-    val logprobs: String?,
+    val logprobs: Logprobs?,
     val finish_reason: String
 )

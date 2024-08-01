@@ -6,48 +6,86 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.components.JBPanel
+import com.intellij.ui.util.maximumHeight
+import com.intellij.ui.util.minimumHeight
 import com.intellij.util.ui.JBUI
-import net.miginfocom.swing.MigLayout
+import io.ktor.util.*
+import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
+import org.cef.browser.CefMessageRouter
+import org.cef.callback.CefQueryCallback
+import org.cef.handler.CefLoadHandlerAdapter
+import org.cef.handler.CefMessageRouterHandlerAdapter
 import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil
 import org.intellij.plugins.markdown.ui.preview.jcef.MarkdownJCEFHtmlPanel
+import java.awt.Dimension
+import javax.swing.BoxLayout
+import kotlin.concurrent.thread
 
 
 class ChatMessage(message: Message, project: Project): JBPanel<ChatMessage>() {
     init {
         val rightToLeft = if (message.origin == MessageOrigin.USER) ",rtl" else ""
-        layout = MigLayout("inset 5$rightToLeft", "[]", "[top]")
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
         if (message.origin == MessageOrigin.USER) {
             border = JBUI.Borders.empty(0, 100, 0,0)
         }
 
         val file = LightVirtualFile("content.md", message.message)
-        file.charset = Charsets.UTF_8
 
         val messageTextArea = MarkdownJCEFHtmlPanel(project, file)
-        val rawHtmlContent = runReadAction {
+        val html = runReadAction {
             MarkdownUtil.generateMarkdownHtml(file, message.message, project)
         }
+
         val htmlContent = """
                     <!DOCTYPE html>
                     <html>
-                    <head>
-                        <meta charset="UTF-8">
-                    </head>
-                        <p>Markdown Previewäöü</p>
-                        $rawHtmlContent
+                    <script>
+                    function sendValueToJava() {
+                        window.external.sendValue(42);
+                    }
+                    </script>
+                        $html
                     </html>
                 """.trimIndent()
 
-        println(htmlContent)
-        messageTextArea.setHtml(htmlContent, 0)
-        messageTextArea.setProperty("Content-Type", "text/html; charset=UTF-8")
+        messageTextArea.setHtml(html, 0)
 
-        messageTextArea.jbCefClient.cefClient.removeRequestHandler();
 
-        //messageTextArea.component.border = JBUI.Borders.empty(5, 10)
-        //messageTextArea.component.background = if (message.origin == MessageOrigin.AGENT) Colors.AGENT.color else Colors.USER.color
-        //messageTextArea.component.isOpaque = message.origin == MessageOrigin.USER
+        val msgRouter = CefMessageRouter.create()
+        msgRouter.addHandler(object: CefMessageRouterHandlerAdapter() {
+            override fun onQuery(
+                browser: CefBrowser?,
+                frame: CefFrame?,
+                queryId: Long,
+                request: String?,
+                persistent: Boolean,
+                callback: CefQueryCallback?
+            ): Boolean {
+                println(request);
+
+
+                messageTextArea.component.maximumSize = Dimension(Int.MAX_VALUE, Integer.valueOf(request) + 32)
+                messageTextArea.component.revalidate()
+                messageTextArea.component.repaint()
+
+                return true;
+            }
+        }, true)
+        messageTextArea.cefBrowser.client.addMessageRouter(msgRouter)
+
+
+        messageTextArea.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
+            override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
+                println("onload")
+                thread {
+                    Thread.sleep(1000);
+                    browser?.executeJavaScript("window.cefQuery({request: '' + document.body.clientHeight });", browser.url, 0);
+                }
+            }
+        }, messageTextArea.cefBrowser)
 
 
         add(messageTextArea.component)
