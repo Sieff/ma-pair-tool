@@ -1,3 +1,9 @@
 package com.github.sieff.mapairtool.model
 
-data class Message(val origin: MessageOrigin, val message: String)
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Message (
+    val origin: MessageOrigin,
+    val message: String
+)
