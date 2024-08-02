@@ -12,9 +12,14 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
     private val chatMessageService = project.service<ChatMessageService>()
 
     override fun handleInput(input: String) {
+        println("handling input ${input}")
         val message = Message(MessageOrigin.USER, input)
         chatMessageService.publishMessage(message)
 
         agentService.postMessage(input)
+    }
+
+    companion object {
+        @JvmStatic fun getInstance(project: Project): InputHandlerServiceImpl = project.service()
     }
 }

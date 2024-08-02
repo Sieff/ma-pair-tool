@@ -1,11 +1,19 @@
 package com.github.sieff.mapairtool.ui.toolWindow
 
+import com.github.sieff.mapairtool.model.Message
+import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
+import com.github.sieff.mapairtool.services.chatMessage.ChatMessageServiceImpl
+import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
+import com.github.sieff.mapairtool.ui.toolWindow.chatHistory.ChatMessage
+import com.intellij.openapi.components.service
+import com.intellij.openapi.components.services
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.jcef.JBCefBrowser
+import kotlinx.serialization.json.Json
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.browser.CefMessageRouter
@@ -14,6 +22,7 @@ import org.cef.callback.CefQueryCallback
 import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefMessageRouterHandlerAdapter
 import java.awt.BorderLayout
+import kotlin.concurrent.thread
 
 
 class ToolWindowFactory : ToolWindowFactory {
@@ -28,19 +37,20 @@ class ToolWindowFactory : ToolWindowFactory {
 
     class MyToolWindow(toolWindow: ToolWindow) {
         private var browser: JBCefBrowser = JBCefBrowser()
+        private val inputHandlerService = toolWindow.project.service<InputHandlerService>()
+        private val chatMessageService = toolWindow.project.service<ChatMessageService>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
             layout = BorderLayout()
             browser = JBCefBrowser()
+            browser.loadURL("localhost:3000")
             val cefClient = browser.jbCefClient.cefClient
 
+            chatMessageService.setBrowser(browser)
 
             // Set up message router
             val routerConfig = CefMessageRouterConfig()
-            val router = CefMessageRouter.create(routerConfig)
-            cefClient.addMessageRouter(router)
-
-            val msgRouter = CefMessageRouter.create()
+            val msgRouter = CefMessageRouter.create(routerConfig)
             msgRouter.addHandler(object: CefMessageRouterHandlerAdapter() {
                 override fun onQuery(
                     browser: CefBrowser?,
@@ -50,23 +60,16 @@ class ToolWindowFactory : ToolWindowFactory {
                     persistent: Boolean,
                     callback: CefQueryCallback?
                 ): Boolean {
-                    println(request);
+                    println(request)
+                    if (request != null) {
+                        inputHandlerService.handleInput(Json.decodeFromString<Message>(request).message)
+                    }
 
                     return true;
                 }
             }, true)
 
             cefClient.addMessageRouter(msgRouter)
-
-
-            // Set up a load handler to handle browser events
-            cefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
-                override fun onLoadEnd(browser: CefBrowser, frame: CefFrame, httpStatusCode: Int) {
-                    println("Page Loaded")
-                }
-            })
-
-            browser.loadURL("localhost:3000")
 
             add(browser.component, BorderLayout.CENTER)
         }
