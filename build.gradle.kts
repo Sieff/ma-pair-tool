@@ -28,6 +28,7 @@ repositories {
 dependencies {
 //    implementation(libs.exampleLibrary)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 // Set the JVM language level used to build the project.

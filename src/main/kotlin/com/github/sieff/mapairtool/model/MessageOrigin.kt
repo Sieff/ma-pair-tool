@@ -4,6 +4,6 @@ import kotlinx.serialization.*
 
 @Serializable
 enum class MessageOrigin {
-    @SerialName("0") AGENT,
-    @SerialName("1") USER
+    @SerialName("AGENT") AGENT,
+    @SerialName("USER") USER
 }
