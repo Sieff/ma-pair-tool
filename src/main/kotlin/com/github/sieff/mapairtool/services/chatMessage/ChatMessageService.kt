@@ -7,5 +7,6 @@ import com.intellij.ui.jcef.JBCefBrowser
 interface ChatMessageService: Publisher<Message> {
     fun publishMessage(message: Message)
     fun getMessages(): List<Message>
-    fun setBrowser(browser: JBCefBrowser)
+    fun addBrowser(browser: JBCefBrowser)
+    fun removeBrowser(browser: JBCefBrowser)
 }

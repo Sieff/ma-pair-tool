@@ -11,13 +11,15 @@ import kotlinx.serialization.json.Json
 
 class ChatMessageServiceImpl(project: Project): ChatMessageService, APublisher<Message>() {
     private val messages: MutableList<Message> = mutableListOf()
-    private var browser: JBCefBrowser? = null
+    private var browsers: MutableList<JBCefBrowser> = mutableListOf()
     private val gson = Gson()
 
     override fun publishMessage(message: Message) {
-        println("Sending message to browser: ${message.message}")
         messages.add(message)
-        browser?.cefBrowser?.executeJavaScript("window.setData(${encodeMessagesToJson(messages)})", browser?.cefBrowser?.url, 0)
+        browsers.forEach {
+            println("Sending message to browser: ${message.message}")
+            it.cefBrowser.executeJavaScript("window.setData(${encodeMessagesToJson(messages)})", it.cefBrowser.url, 0)
+        }
         publish(message)
     }
 
@@ -25,8 +27,12 @@ class ChatMessageServiceImpl(project: Project): ChatMessageService, APublisher<M
         return messages
     }
 
-    override fun setBrowser(browser: JBCefBrowser) {
-        this.browser = browser
+    override fun addBrowser(browser: JBCefBrowser) {
+        this.browsers.add(browser)
+    }
+
+    override fun removeBrowser(browser: JBCefBrowser) {
+        this.browsers.remove(browser)
     }
 
     private fun encodeMessagesToJson(messages: List<Message>): String {

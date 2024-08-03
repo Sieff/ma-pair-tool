@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.awt.RelativePoint
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.Point
 import java.awt.event.MouseAdapter
@@ -20,18 +21,15 @@ class PopupAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         if (popup == null || !popup!!.isVisible) {
-            popupComponent = PopupComponent(e.project!!)
+            popupComponent = PopupComponent(e.project!!, Dimension(600, 200))
 
             popup = JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(popupComponent.panel, popupComponent.preferredFocusedComponent)
-                .setResizable(false)
-                .setMovable(true)
-                .setRequestFocus(true)
+                .createComponentPopupBuilder(popupComponent, popupComponent.preferredFocusedComponent)
                 .setCancelOnClickOutside(false)
                 .createPopup()
 
-            addMovableSupport(popup!!, popupComponent.panel)
-            showPopupAtBottomCenter(popup!!)
+            addMovableSupport(popup!!, popupComponent)
+            showPopupAtBottomCenter(popup!!, popupComponent)
             Disposer.register(popup!!, popupComponent)
         }
     }
@@ -59,9 +57,10 @@ class PopupAction : AnAction() {
         component.addMouseMotionListener(moveListener)
     }
 
-    private fun showPopupAtBottomCenter(popup: JBPopup) {
+    private fun showPopupAtBottomCenter(popup: JBPopup, popupComponent: PopupComponent) {
         val screenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration.bounds
-        val popupSize = popup.content.size
+        val popupSize = popupComponent.size
+        println(popupSize)
         val x = screenBounds.x + (screenBounds.width - popupSize.width) / 2
         val y = screenBounds.y + screenBounds.height - popupSize.height - 100
 

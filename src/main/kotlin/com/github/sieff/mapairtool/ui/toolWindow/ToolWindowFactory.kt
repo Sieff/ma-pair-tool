@@ -2,11 +2,8 @@ package com.github.sieff.mapairtool.ui.toolWindow
 
 import com.github.sieff.mapairtool.model.Message
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
-import com.github.sieff.mapairtool.services.chatMessage.ChatMessageServiceImpl
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
-import com.github.sieff.mapairtool.ui.toolWindow.chatHistory.ChatMessage
 import com.intellij.openapi.components.service
-import com.intellij.openapi.components.services
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -19,10 +16,8 @@ import org.cef.browser.CefFrame
 import org.cef.browser.CefMessageRouter
 import org.cef.browser.CefMessageRouter.CefMessageRouterConfig
 import org.cef.callback.CefQueryCallback
-import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefMessageRouterHandlerAdapter
 import java.awt.BorderLayout
-import kotlin.concurrent.thread
 
 
 class ToolWindowFactory : ToolWindowFactory {
@@ -43,10 +38,10 @@ class ToolWindowFactory : ToolWindowFactory {
         fun getContent() = JBPanel<JBPanel<*>>().apply {
             layout = BorderLayout()
             browser = JBCefBrowser()
-            browser.loadURL("localhost:3000")
+            browser.loadURL("localhost:3000/chat")
             val cefClient = browser.jbCefClient.cefClient
 
-            chatMessageService.setBrowser(browser)
+            chatMessageService.addBrowser(browser)
 
             // Set up message router
             val routerConfig = CefMessageRouterConfig()
