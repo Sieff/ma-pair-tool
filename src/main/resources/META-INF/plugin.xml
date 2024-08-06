@@ -26,14 +26,17 @@
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.chatMessage.ChatMessageService"
                 serviceImplementation="com.github.sieff.mapairtool.services.chatMessage.ChatMessageServiceImpl"/>
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService"
+                serviceImplementation="com.github.sieff.mapairtool.services.cefBrowser.CefBrowserServiceImpl"/>
     </extensions>
 
     <applicationListeners>
         <listener class="com.github.sieff.mapairtool.listeners.ApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
     <actions>
-        <action id="com.github.sieff.mapairtool.actions.PopupAction"
-                class="com.github.sieff.mapairtool.actions.PopupAction" text="Show Popup">
+        <action id="com.github.sieff.mapairtool.ui.popup.PopupAction"
+                class="com.github.sieff.mapairtool.ui.popup.PopupAction" text="Show Popup">
         </action>
     </actions>
 </idea-plugin>

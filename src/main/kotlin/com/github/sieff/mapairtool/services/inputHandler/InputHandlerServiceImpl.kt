@@ -1,7 +1,6 @@
 package com.github.sieff.mapairtool.services.inputHandler
 
-import com.github.sieff.mapairtool.model.Message
-import com.github.sieff.mapairtool.model.MessageOrigin
+import com.github.sieff.mapairtool.model.message.Message
 import com.github.sieff.mapairtool.services.agent.AgentService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.intellij.openapi.components.service
@@ -11,12 +10,19 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
     private val agentService = project.service<AgentService>()
     private val chatMessageService = project.service<ChatMessageService>()
 
-    override fun handleInput(input: String) {
-        println("handling input ${input}")
-        val message = Message(MessageOrigin.USER, input)
-        chatMessageService.publishMessage(message)
+    override fun handleInput(input: Message) {
+        println("New input: $input")
+        chatMessageService.addMessage(input)
 
-        agentService.postMessage(input)
+        agentService.askTheAssistant(chatMessageService.getMessages())
+    }
+
+    override fun handleWidgetInput(input: Message) {
+        println("New widget input: $input")
+        chatMessageService.useTemporaryMessage()
+        chatMessageService.addMessage(input)
+
+        agentService.askTheAssistant(chatMessageService.getMessages())
     }
 
     companion object {

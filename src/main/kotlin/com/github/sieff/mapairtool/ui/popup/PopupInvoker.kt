@@ -4,7 +4,6 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
-import com.github.sieff.mapairtool.actions.PopupAction
 
 object PopupInvoker {
 

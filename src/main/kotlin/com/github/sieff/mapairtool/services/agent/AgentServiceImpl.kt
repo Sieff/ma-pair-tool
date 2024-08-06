@@ -1,14 +1,12 @@
 package com.github.sieff.mapairtool.services.agent
 
 import com.github.sieff.mapairtool.Bundle
-import com.github.sieff.mapairtool.model.Message
-import com.github.sieff.mapairtool.model.MessageOrigin
-import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletion
-import com.github.sieff.mapairtool.model.chatCompletion.Choice
-import com.github.sieff.mapairtool.model.chatCompletion.CompletionMessage
-import com.github.sieff.mapairtool.model.chatCompletion.Usage
+import com.github.sieff.mapairtool.model.chatCompletion.*
+import com.github.sieff.mapairtool.model.message.Message
+import com.github.sieff.mapairtool.model.message.MessageOrigin
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.github.sieff.mapairtool.model.completionRequest.RequestMessage
+import com.github.sieff.mapairtool.model.message.BaseMessage
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
@@ -28,18 +26,18 @@ import javax.swing.SwingUtilities
 class AgentServiceImpl(val project: Project): AgentService {
     private val chatMessageService = project.service<ChatMessageService>()
 
-    override fun postMessage(message: String) {
+    override fun askTheAssistant(messages: List<BaseMessage>) {
         CompletableFuture.supplyAsync {
-            getUrlContents()
+            getAiCompletion(messages)
         }.thenAccept { result: ChatCompletion ->
             SwingUtilities.invokeLater {
                 PopupInvoker.invokePopup(project)
-                chatMessageService.publishMessage(Message(MessageOrigin.AGENT, result.choices[0].message.content))
+                chatMessageService.addMessage(Message(MessageOrigin.AGENT, result.choices[0].message.content))
             }
         }
     }
 
-    private fun getUrlContents(): ChatCompletion {
+    private fun getAiCompletion(messages: List<BaseMessage>): ChatCompletion {
         try {
             // The URL of the server
             val url = URL("https://api.openai.com/v1/chat/completions")
@@ -58,7 +56,7 @@ class AgentServiceImpl(val project: Project): AgentService {
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Authorization", "Bearer ${AppSettingsState.getInstance().state.apiKey}")
 
-            val body: String = Json.encodeToString(getRequest("gpt-4o-mini", chatMessageService.getMessages()))
+            val body: String = Json.encodeToString(getRequest("gpt-4o-mini", messages))
             println(body)
 
             connection.outputStream.use { os ->
@@ -84,14 +82,14 @@ class AgentServiceImpl(val project: Project): AgentService {
 
             // Print the response
             println(response.toString())
-            return Json.decodeFromString<ChatCompletion>(response.toString())
+            return ChatCompletionSerializer.json.decodeFromString<ChatCompletion>(response.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return getErrorResponse(Bundle.message("errors.unforeseenError"))
     }
 
-    fun getRequest(model: String, messages: List<Message>): CompletionRequest {
+    fun getRequest(model: String, messages: List<BaseMessage>): CompletionRequest {
         val requestMessages = messages.map {
             val role: String = if (it.origin == MessageOrigin.AGENT) "assistant" else "user"
             RequestMessage(it.message, role)

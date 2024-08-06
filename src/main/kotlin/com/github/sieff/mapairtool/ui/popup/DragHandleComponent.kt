@@ -1,4 +1,4 @@
-package com.github.sieff.mapairtool.ui.swing
+package com.github.sieff.mapairtool.ui.popup
 
 import com.intellij.ui.JBColor
 import java.awt.*

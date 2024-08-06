@@ -1,4 +1,4 @@
-package com.github.sieff.mapairtool.model
+package com.github.sieff.mapairtool.model.message
 
 import kotlinx.serialization.*
 

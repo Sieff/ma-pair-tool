@@ -1,6 +1,5 @@
-package com.github.sieff.mapairtool.actions
+package com.github.sieff.mapairtool.ui.popup
 
-import com.github.sieff.mapairtool.ui.popup.PopupComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopup
