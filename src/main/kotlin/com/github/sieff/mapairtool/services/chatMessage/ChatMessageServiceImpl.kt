@@ -11,7 +11,8 @@ class ChatMessageServiceImpl: ChatMessageService, APublisher<ChatMessageState>()
     override fun addMessage(message: BaseMessage) {
         messages.add(message)
         if (message.origin == MessageOrigin.AGENT) {
-            temporaryMessage = AssistantMessage(message.origin, message.message, Emotion.HAPPY, ArrayList());
+            val quickReactions = mutableListOf("Yes", "No", "Maybe")
+            temporaryMessage = AssistantMessage(message.origin, message.message, Emotion.HAPPY, quickReactions);
         }
         publish(ChatMessageState(messages, temporaryMessage))
     }

@@ -21,7 +21,6 @@ import javax.swing.JPanel
 
 class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JBPanel<JBPanel<*>>() {
     private var browser: JBCefBrowser = JBCefBrowser()
-    private val inputHandlerService = project.service<InputHandlerService>()
     private val cefBrowserService = project.service<CefBrowserService>()
 
     init {
@@ -31,6 +30,7 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
         browser.loadURL("localhost:3000/widget")
         val cefClient = browser.jbCefClient.cefClient
 
+        println("Creating Widget Browser")
         cefBrowserService.widgetBrowser = browser
 
         // Set up message router
