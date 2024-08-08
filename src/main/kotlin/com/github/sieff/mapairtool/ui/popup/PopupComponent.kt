@@ -45,10 +45,12 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
         browser.component.preferredSize = preferredSize
         size = preferredSize
 
-        val dragHandlePanel = getDragHandle()
+        val dragHandlePanel1 = getDragHandle()
+        val dragHandlePanel2 = getDragHandle()
 
         add(browser.component, BorderLayout.CENTER)
-        add(dragHandlePanel, BorderLayout.WEST)
+        add(dragHandlePanel1, BorderLayout.WEST)
+        add(dragHandlePanel2, BorderLayout.EAST)
     }
 
     private fun getDragHandle(): JPanel {
