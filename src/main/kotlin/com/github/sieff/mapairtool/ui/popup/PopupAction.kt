@@ -25,6 +25,7 @@ class PopupAction : AnAction() {
             popup = JBPopupFactory.getInstance()
                 .createComponentPopupBuilder(popupComponent, popupComponent.preferredFocusedComponent)
                 .setCancelOnClickOutside(false)
+                .setRequestFocus(true)
                 .createPopup()
 
             addMovableSupport(popup!!, popupComponent)
