@@ -10,7 +10,7 @@ object CefQuerySerializer {
             subclass(InputQuery::class, InputQuery.serializer())
             subclass(WidgetInputQuery::class, WidgetInputQuery.serializer())
             subclass(RequestMessagesQuery::class, RequestMessagesQuery.serializer())
-            subclass(RequestToolWindowQuery::class, RequestToolWindowQuery.serializer())
+            subclass(RequestToolWindowFocusQuery::class, RequestToolWindowFocusQuery.serializer())
         }
     }
 

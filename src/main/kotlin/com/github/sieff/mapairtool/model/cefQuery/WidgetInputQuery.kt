@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("WidgetInputQuery")
 data class WidgetInputQuery(
-    override val queryType: CefQueryType,
-    val message: Message
+    val message: Message,
+    override val queryType: CefQueryType = CefQueryType.WIDGET_INPUT
 ): CefQuery()

@@ -9,5 +9,6 @@ data class AssistantMessage (
     override val origin: MessageOrigin,
     override val message: String,
     val emotion: Emotion,
-    val quickReactions: List<String>
+    val quickReactions: List<String>,
+    val selfInitiated: Boolean
 ): BaseMessage()

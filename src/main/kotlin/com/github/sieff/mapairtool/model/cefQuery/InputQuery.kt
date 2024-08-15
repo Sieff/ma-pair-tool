@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("InputQuery")
 data class InputQuery(
-    override val queryType: CefQueryType,
-    val message: Message
+    val message: Message,
+    override val queryType: CefQueryType = CefQueryType.INPUT
 ): CefQuery()

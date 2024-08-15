@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("RequestMessagesQuery")
 data class RequestMessagesQuery(
-    override val queryType: CefQueryType
+    override val queryType: CefQueryType = CefQueryType.REQUEST_MESSAGES
 ): CefQuery()

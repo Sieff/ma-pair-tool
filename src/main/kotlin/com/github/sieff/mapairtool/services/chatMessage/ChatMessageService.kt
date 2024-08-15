@@ -6,7 +6,6 @@ import com.github.sieff.mapairtool.util.observerPattern.publisher.Publisher
 
 interface ChatMessageService: Publisher<ChatMessageState> {
     fun addMessage(message: BaseMessage)
-    fun useTemporaryMessage()
     fun getMessages(): List<BaseMessage>
     fun getState(): ChatMessageState
 }

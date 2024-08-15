@@ -9,4 +9,5 @@ interface CefBrowserService: Observer<ChatMessageState> {
     var widgetBrowser: JBCefBrowser?
     fun sendMessages(state: ChatMessageState)
     fun sendCurrentState()
+    fun requestToolWindowFocus()
 }

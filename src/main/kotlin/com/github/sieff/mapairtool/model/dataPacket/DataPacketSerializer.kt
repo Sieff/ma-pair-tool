@@ -9,6 +9,7 @@ object DataPacketSerializer {
         polymorphic(DataPacket::class) {
             subclass(UpdateMessagesPacket::class, UpdateMessagesPacket.serializer())
             subclass(UpdateTemporaryMessagePacket::class, UpdateTemporaryMessagePacket.serializer())
+            subclass(RequestTextInputFocusPacket::class, RequestTextInputFocusPacket.serializer())
         }
     }
 

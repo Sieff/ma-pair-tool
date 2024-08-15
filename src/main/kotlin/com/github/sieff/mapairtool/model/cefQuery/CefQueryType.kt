@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 enum class CefQueryType {
     @SerialName("INPUT") INPUT,
     @SerialName("WIDGET_INPUT") WIDGET_INPUT,
-    @SerialName("REQUEST_TOOL_WINDOW") REQUEST_TOOL_WINDOW,
+    @SerialName("REQUEST_TOOL_WINDOW_FOCUS") REQUEST_TOOL_WINDOW_FOCUS,
     @SerialName("REQUEST_MESSAGES") REQUEST_MESSAGES
 }

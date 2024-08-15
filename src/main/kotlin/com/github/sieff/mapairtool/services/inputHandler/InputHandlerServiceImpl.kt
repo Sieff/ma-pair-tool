@@ -19,7 +19,6 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
 
     override fun handleWidgetInput(input: Message) {
         println("New widget input: $input")
-        chatMessageService.useTemporaryMessage()
         chatMessageService.addMessage(input)
 
         agentService.askTheAssistant(chatMessageService.getMessages())

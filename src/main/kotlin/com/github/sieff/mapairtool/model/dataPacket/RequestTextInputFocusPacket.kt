@@ -1,10 +1,8 @@
 package com.github.sieff.mapairtool.model.dataPacket
 
-import com.github.sieff.mapairtool.model.message.AssistantMessage
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateTemporaryMessagePacket(
-    val message: AssistantMessage,
+data class RequestTextInputFocusPacket(
     override val packetType: DataPacketType
 ): DataPacket()

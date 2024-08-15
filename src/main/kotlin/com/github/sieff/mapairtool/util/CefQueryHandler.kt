@@ -30,7 +30,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
         when(query.queryType) {
             CefQueryType.INPUT -> onInput(request)
             CefQueryType.WIDGET_INPUT -> onWidgetInput(request)
-            CefQueryType.REQUEST_TOOL_WINDOW -> onRequestToolWindow()
+            CefQueryType.REQUEST_TOOL_WINDOW_FOCUS -> onRequestToolWindowFocus()
             CefQueryType.REQUEST_MESSAGES -> onRequestMessages()
         }
 
@@ -47,7 +47,8 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
         inputHandlerService.handleWidgetInput(query.message)
     }
 
-    private fun onRequestToolWindow() {
+    private fun onRequestToolWindowFocus() {
+        cefBrowserService.requestToolWindowFocus()
     }
 
     private fun onRequestMessages() {
