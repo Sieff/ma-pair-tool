@@ -8,7 +8,7 @@ object DataPacketSerializer {
     private val module = SerializersModule {
         polymorphic(DataPacket::class) {
             subclass(UpdateMessagesPacket::class, UpdateMessagesPacket.serializer())
-            subclass(UpdateTemporaryMessagePacket::class, UpdateTemporaryMessagePacket.serializer())
+            subclass(UpdateWidgetMessagePacket::class, UpdateWidgetMessagePacket.serializer())
             subclass(RequestTextInputFocusPacket::class, RequestTextInputFocusPacket.serializer())
         }
     }

@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpdateMessagesPacket(
     val messages: List<BaseMessage>,
-    val temporaryMessage: AssistantMessage?,
+    val widgetMessage: AssistantMessage?,
     override val packetType: DataPacketType
 ): DataPacket()

@@ -7,5 +7,5 @@ enum class Emotion {
     @SerialName("NEUTRAL") NEUTRAL,
     @SerialName("HAPPY") HAPPY,
     @SerialName("SAD") SAD,
-    @SerialName("THINKING") THINKING
+    @SerialName("CONFUSED") CONFUSED
 }

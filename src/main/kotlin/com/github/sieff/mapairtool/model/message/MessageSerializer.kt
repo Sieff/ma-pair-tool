@@ -1,15 +1,14 @@
-package com.github.sieff.mapairtool.model.dataPacket
+package com.github.sieff.mapairtool.model.message
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
-object DataPacketSerializer {
+object MessageSerializer {
     private val module = SerializersModule {
-        polymorphic(DataPacket::class) {
-            subclass(UpdateMessagesPacket::class, UpdateMessagesPacket.serializer())
-            subclass(UpdateTemporaryMessagePacket::class, UpdateTemporaryMessagePacket.serializer())
-            subclass(RequestTextInputFocusPacket::class, RequestTextInputFocusPacket.serializer())
+        polymorphic(BaseMessage::class) {
+            subclass(AssistantMessage::class, AssistantMessage.serializer())
+            subclass(Message::class, Message.serializer())
         }
     }
 

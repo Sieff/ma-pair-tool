@@ -4,7 +4,7 @@ import com.github.sieff.mapairtool.model.message.AssistantMessage
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateTemporaryMessagePacket(
+data class UpdateWidgetMessagePacket(
     val message: AssistantMessage,
     override val packetType: DataPacketType
 ): DataPacket()
