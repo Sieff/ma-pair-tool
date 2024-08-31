@@ -29,6 +29,9 @@
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService"
                 serviceImplementation="com.github.sieff.mapairtool.services.cefBrowser.CefBrowserServiceImpl"/>
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.sourceCode.SourceCodeService"
+                serviceImplementation="com.github.sieff.mapairtool.services.sourceCode.SourceCodeServiceImpl"/>
     </extensions>
 
     <applicationListeners>
