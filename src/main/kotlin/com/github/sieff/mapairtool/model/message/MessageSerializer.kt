@@ -14,5 +14,6 @@ object MessageSerializer {
 
     val json: Json = Json {
         serializersModule = module
+        ignoreUnknownKeys = true
     }
 }

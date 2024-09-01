@@ -14,14 +14,14 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
         println("New input: $input")
         chatMessageService.addMessage(input)
 
-        agentService.askTheAssistant(chatMessageService.getMessages())
+        agentService.invokeMainAgent()
     }
 
     override fun handleWidgetInput(input: Message) {
         println("New widget input: $input")
         chatMessageService.addMessage(input)
 
-        agentService.askTheAssistant(chatMessageService.getMessages())
+        agentService.invokeMainAgent()
     }
 
     companion object {

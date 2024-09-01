@@ -21,6 +21,9 @@
                 serviceInterface="com.github.sieff.mapairtool.services.agent.AgentService"
                 serviceImplementation="com.github.sieff.mapairtool.services.agent.AgentServiceImpl"/>
         <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.agent.PromptService"
+                serviceImplementation="com.github.sieff.mapairtool.services.agent.PromptServiceImpl"/>
+        <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.inputHandler.InputHandlerService"
                 serviceImplementation="com.github.sieff.mapairtool.services.inputHandler.InputHandlerServiceImpl"/>
         <projectService
