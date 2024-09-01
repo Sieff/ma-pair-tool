@@ -53,9 +53,10 @@ class PromptBuilder(project: Project, val model: String) {
     fun addSummaryAgentTask(): PromptBuilder {
         val message = RequestMessage("""
             Do not generate output that isn’t in properly formatted JSON.
-            Return a json Object with the following interface: {summary: string, key_information: string}.
-            'summary' Summarize the given conversation into different sections with overarching topics.
-            'key_information' Extract key information from the conversation and provide them in a string format that can be used in future request.
+            Return a json Object with the following interface: {summary: string, key_information: string[], boundaries: string[]}.
+            'summary' a plain string containing a summary of the conversation as different sections with overarching topics.
+            'key_information' extract a list of the most relevant key information as simple strings about the environment from the conversation. Might be empty in the beginning.
+            'boundaries' extract boundaries that the user communicated towards the agent about the future behaviour of the agent as a list of strings. Might be empty in the beginning.
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -64,10 +65,14 @@ class PromptBuilder(project: Project, val model: String) {
     fun addProactiveAgentTask(): PromptBuilder {
         val message = RequestMessage("""
             With this request you have the opportunity to proactively communicate with the user.
+            In the conversation history, a proactive message is a message, where the proactive flag is set to true.
             Provided are information about the user and the current conversation history.
             Do not generate output that isn’t in properly formatted JSON.
-            Return a json Object with the following interface: {necessity: number, thought: string, message: string, emotion: string, reactions: string[]}.
+            Return a json Object with the following interface: {origin: string, message: string, necessity: number, thought: string, emotion: string, reactions: string[], proactive: boolean}.
+            'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
+            'message' will be your proactive message, that you want to show the user.
             'necessity' is an integer value from 1 to 10. This value describes how necessary you think your message currently is to show to the user.
+            
             For example: 
                 - In early phases, probing questions about the environment are more necessary. necessity = 10
                 - In later phases, probing questions about the environment are less necessary. necessity = 1
@@ -75,17 +80,30 @@ class PromptBuilder(project: Project, val model: String) {
                 - When the assistant already posted multiple messages, without the user responding, the message might be less necessary. necessity = 3
                 - When you notice a possible refactoring in the code, that the user is currently working on, a small example for how to do it better might be necessary. necessity = 7
                 - But when the code just seems unfinished, it might be less necessary, as the user still wants to work on it. necessity = 4
+                - Ask a clarification question. necessity = 5
+                - When nothing is really applicable, you can always fall back on messages that show social presence. These may ask what the user is currently thinking about, how the user is doing, complimenting the user or other lightweight probing questions.
+                - When the user very recently talked to the agent, a proactive message might not be necessary.
+
+            Posting too many proactive messages might ruin the users flow. Asking too many clarification questions also is not desired.
+            Posting multiple proactive messages in a row should lower the necessity value.
+            Posting multiple proactive messages with a similar sentiment is not desired and should lower the necessity value.
+            You have to respect the boundaries of the user, use the provided information to check against the boundaries.
+            Breaking a boundary should strongly reduce the necessity value.
+            Messages with a necessity value less than 6 will not be propagated to the user.
             'thought' is a string where you formulate, why you think your message has this necessity value.
-            'message' will be your proactive message, that you want to show the user.
             'emotion' will be your sentiment towards the message, it can be one of 'HAPPY', 'SAD', 'NEUTRAL', 'CONFUSED'.
             'reactions' will be an array of simple, short responses for the user to respond to your message. There may be 0 to 3 quick responses. You decide how many.
+            'proactive' will always be the boolean true.
         """.trimIndent(), "system")
         addMessage(message)
         return this
     }
 
     fun addSummary(): PromptBuilder {
-        val message = RequestMessage("Ignore this for now", "system")
+        val message = RequestMessage("""
+            Here is a summary of the conversation thus far:
+            ${PromptInformation.summary}
+        """.trimIndent(), "system")
         addMessage(message)
         return this
     }
@@ -129,19 +147,30 @@ class PromptBuilder(project: Project, val model: String) {
     }
 
     fun addKeyInformation(): PromptBuilder {
-        val message = RequestMessage("Ignore this for now", "system")
+        val message = RequestMessage("""
+            Here is relevant key information:
+            ${PromptInformation.keyInformation}
+        """.trimIndent(), "system")
         addMessage(message)
         return this
     }
 
     fun addUserMetrics(): PromptBuilder {
-        val message = RequestMessage("Ignore this for now", "system")
+        val message = RequestMessage("""
+            Here are some relevant metrics, -1 indicates an invalid value:
+            Time in seconds since the last user communication with the agent: ${PromptInformation.timeSinceLastUserInteraction()};
+            Time in seconds since the last user edit in the code editor: ${PromptInformation.timeSinceLastUserEdit()};
+            Time in seconds since the agent (you) last communicated with the user: ${PromptInformation.timeSinceLastAgentMessage()};
+        """.trimIndent(), "system")
         addMessage(message)
         return this
     }
 
     fun addUserBoundaries(): PromptBuilder {
-        val message = RequestMessage("Ignore this for now", "system")
+        val message = RequestMessage("""
+            Here are relevant boundaries, that the user communicated:
+            ${PromptInformation.boundaries}
+        """.trimIndent(), "system")
         addMessage(message)
         return this
     }

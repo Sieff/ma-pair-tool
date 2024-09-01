@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.services.cefBrowser
 
 import com.github.sieff.mapairtool.model.dataPacket.*
 import com.github.sieff.mapairtool.model.message.ChatMessageState
+import com.github.sieff.mapairtool.services.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -16,17 +17,19 @@ class CefBrowserServiceImpl(
 ): CefBrowserService {
     private val chatMessageService = project.service<ChatMessageService>()
 
+    private val logger = Logger(this.javaClass.simpleName)
+
     override var toolWindowBrowser: JBCefBrowser? = null
     override var widgetBrowser: JBCefBrowser? = null
 
     init {
-        chatMessageService.subscribe(this);
+        chatMessageService.subscribe(this)
     }
 
     override fun sendMessages(state: ChatMessageState) {
         val packet = UpdateMessagesPacket(state.messages, state.widgetMessage, DataPacketType.UPDATE_MESSAGES)
 
-        println("Sending messages to browser")
+        logger.info("Sending messages to browser")
 
         sendPacketToBrowser(toolWindowBrowser, packet)
 
@@ -61,7 +64,7 @@ class CefBrowserServiceImpl(
     }
 
     private fun encodePacketToJson(packet: DataPacket): String {
-        println("Packet as json: ${DataPacketSerializer.json.encodeToString(packet)}")
+        logger.debug("Packet as json: ${DataPacketSerializer.json.encodeToString(packet)}")
         return DataPacketSerializer.json.encodeToString(packet)
     }
 }

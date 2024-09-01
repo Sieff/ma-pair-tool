@@ -1,7 +1,7 @@
 package com.github.sieff.mapairtool.ui.popup
 
+import com.github.sieff.mapairtool.services.Logger
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
-import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
 import com.github.sieff.mapairtool.util.CefQueryHandler
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
@@ -23,6 +23,8 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
     private var browser: JBCefBrowser = JBCefBrowser()
     private val cefBrowserService = project.service<CefBrowserService>()
 
+    private val logger = Logger(this.javaClass.simpleName)
+
     init {
         layout = BorderLayout()
 
@@ -30,7 +32,7 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
         browser.loadURL("localhost:3000/widget")
         val cefClient = browser.jbCefClient.cefClient
 
-        println("Creating Widget Browser")
+        logger.info("Creating Widget Browser")
         cefBrowserService.widgetBrowser = browser
 
         // Set up message router

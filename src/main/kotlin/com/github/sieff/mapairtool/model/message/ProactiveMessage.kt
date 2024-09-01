@@ -3,16 +3,19 @@ package com.github.sieff.mapairtool.model.message
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
 @Serializable
-@SerialName("AssistantMessage")
-data class AssistantMessage (
+@SerialName("ProactiveMessage")
+data class ProactiveMessage(
     override val origin: MessageOrigin,
     override val message: String,
     val emotion: Emotion,
     val reactions: List<String>,
-    val proactive: Boolean
+    val proactive: Boolean,
+    val thought: String,
+    val necessity: Int
 ): BaseMessage() {
-    fun toProactiveMessage(): ProactiveMessage {
-        return ProactiveMessage(origin, message, emotion, reactions, proactive, "", -1)
+    fun toAssistantMessage(): AssistantMessage {
+        return AssistantMessage(origin, message, emotion, reactions, proactive)
     }
 }

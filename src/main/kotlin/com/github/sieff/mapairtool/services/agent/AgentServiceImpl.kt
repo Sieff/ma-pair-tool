@@ -4,11 +4,13 @@ import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.*
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.github.sieff.mapairtool.model.message.*
+import com.github.sieff.mapairtool.services.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.remoteDev.tracing.getCurrentTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.BufferedReader
@@ -25,8 +27,11 @@ class AgentServiceImpl(val project: Project): AgentService {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
 
+    private val logger = Logger(this.javaClass.simpleName)
+
     private val url = URL("https://api.openai.com/v1/chat/completions")
     private val model = "gpt-4o-mini"
+    private val proactiveInvocationInterval = 60_000L
 
     init {
         startProactiveAgent()
@@ -40,6 +45,7 @@ class AgentServiceImpl(val project: Project): AgentService {
                 PopupInvoker.invokePopup(project)
                 val message = result.choices[0].message.content
                 chatMessageService.addMessage(getAssistantMessage(message))
+                PromptInformation.lastAgentMessage = getCurrentTime()
                 invokeSummaryAgent()
             }
         }
@@ -49,17 +55,25 @@ class AgentServiceImpl(val project: Project): AgentService {
         CompletableFuture.supplyAsync {
             getAiCompletion(promptService.getSummaryAgentPrompt(model))
         }.thenAccept { result: ChatCompletion ->
-            println("Summary Agent response:")
-            println(result.choices[0].message.content)
+            val summaryMessage = getSummaryMessage(result.choices[0].message.content)
+            if (summaryMessage != null) {
+                PromptInformation.summary = summaryMessage.summary
+                PromptInformation.keyInformation = summaryMessage.keyInformation
+                PromptInformation.boundaries = summaryMessage.boundaries
+
+                logger.debug(PromptInformation.summary)
+                logger.debug(PromptInformation.keyInformation)
+                logger.debug(PromptInformation.boundaries)
+            }
         }
     }
 
     private fun startProactiveAgent() {
         thread {
             while (true) {
-                Thread.sleep(60_000)
+                Thread.sleep(proactiveInvocationInterval)
                 if (AppSettingsState.getInstance().state.apiKey == "") {
-                    println("ApiKey not set, can't invoke proactive agent.")
+                    logger.warn("ApiKey not set, can't invoke proactive agent.")
                     continue
                 }
 
@@ -69,8 +83,8 @@ class AgentServiceImpl(val project: Project): AgentService {
                     SwingUtilities.invokeLater {
                         PopupInvoker.invokePopup(project)
                         val message = result.choices[0].message.content
-                        println("Proactive Agent response:")
-                        println(message)
+                        chatMessageService.addMessage(getProactiveMessage(message).toAssistantMessage())
+                        PromptInformation.lastAgentMessage = getCurrentTime()
                     }
                 }
             }
@@ -82,14 +96,14 @@ class AgentServiceImpl(val project: Project): AgentService {
             val connection: HttpURLConnection = createConnection(prompt)
 
             val responseCode: Int = connection.getResponseCode()
-            println("Response Code: $responseCode")
             if (responseCode != 200) {
+                logger.error("Response Code: $responseCode")
                 return getErrorResponse(Bundle.message("errors.apiError"))
             }
 
             val response = readResponse(connection)
-            println("Response:")
-            println(response)
+            logger.debug("Response:")
+            logger.debug(response)
 
             return ChatCompletionSerializer.json.decodeFromString<ChatCompletion>(response)
         } catch (e: Exception) {
@@ -109,8 +123,8 @@ class AgentServiceImpl(val project: Project): AgentService {
         connection.setRequestProperty("Authorization", "Bearer ${AppSettingsState.getInstance().state.apiKey}")
 
         val body: String = Json.encodeToString(prompt)
-        println("Request body:")
-        println(body)
+        logger.debug("Request body:")
+        logger.debug(body)
 
         connection.outputStream.use { os ->
             val input: ByteArray = body.toByteArray(Charsets.UTF_8)
@@ -149,8 +163,28 @@ class AgentServiceImpl(val project: Project): AgentService {
             val rawMessage = MessageSerializer.json.decodeFromString<AssistantMessage>(content)
             return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, false)
         } catch (e: Exception) {
-            println(e.message)
+            e.message?.let { logger.error(it) }
             return getErrorMessage(Bundle.message("errors.parsingError"))
+        }
+    }
+
+    private fun getProactiveMessage(content: String): ProactiveMessage {
+        try {
+            val rawMessage = MessageSerializer.json.decodeFromString<ProactiveMessage>(content)
+            logger.debug("Necessity value: ${rawMessage.necessity}")
+            return ProactiveMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, true, rawMessage.thought, rawMessage.necessity)
+        } catch (e: Exception) {
+            e.message?.let { logger.error(it) }
+            return getErrorMessage(Bundle.message("errors.parsingError")).toProactiveMessage()
+        }
+    }
+
+    private fun getSummaryMessage(content: String): SummaryMessage? {
+        try {
+            return Json.decodeFromString<SummaryMessage>(content)
+        } catch (e: Exception) {
+            e.message?.let { logger.error(it) }
+            return null
         }
     }
 }

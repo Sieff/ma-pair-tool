@@ -1,5 +1,6 @@
 package com.github.sieff.mapairtool.ui.popup
 
+import com.github.sieff.mapairtool.services.Logger
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopup
@@ -17,6 +18,8 @@ import java.awt.event.MouseEvent
 class PopupAction : AnAction() {
     private lateinit var popupComponent: PopupComponent
     private var popup: JBPopup? = null
+
+    private val logger = Logger(this.javaClass.simpleName)
 
     override fun actionPerformed(e: AnActionEvent) {
         if (popup == null || !popup!!.isVisible) {
@@ -60,7 +63,7 @@ class PopupAction : AnAction() {
     private fun showPopupAtBottomCenter(popup: JBPopup, popupComponent: PopupComponent) {
         val screenBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration.bounds
         val popupSize = popupComponent.size
-        println(popupSize)
+        logger.debug(popupSize)
         val x = screenBounds.x + (screenBounds.width - popupSize.width) / 2
         val y = screenBounds.y + screenBounds.height - popupSize.height - 100
 
