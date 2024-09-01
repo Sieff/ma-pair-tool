@@ -13,7 +13,7 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
     private val agentService = project.service<AgentService>()
     private val chatMessageService = project.service<ChatMessageService>()
 
-    private val logger = Logger(this.javaClass.simpleName)
+    private val logger = Logger(this.javaClass)
 
     override fun handleInput(input: Message) {
         logger.debug("New input: $input")

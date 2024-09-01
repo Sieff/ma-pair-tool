@@ -17,7 +17,7 @@ class CefBrowserServiceImpl(
 ): CefBrowserService {
     private val chatMessageService = project.service<ChatMessageService>()
 
-    private val logger = Logger(this.javaClass.simpleName)
+    private val logger = Logger(this.javaClass)
 
     override var toolWindowBrowser: JBCefBrowser? = null
     override var widgetBrowser: JBCefBrowser? = null

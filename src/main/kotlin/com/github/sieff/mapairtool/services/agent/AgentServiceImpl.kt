@@ -27,7 +27,7 @@ class AgentServiceImpl(val project: Project): AgentService {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
 
-    private val logger = Logger(this.javaClass.simpleName)
+    private val logger = Logger(this.javaClass)
 
     private val url = URL("https://api.openai.com/v1/chat/completions")
     private val model = "gpt-4o-mini"

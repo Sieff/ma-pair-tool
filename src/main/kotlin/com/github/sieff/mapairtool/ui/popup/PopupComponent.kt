@@ -23,7 +23,7 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
     private var browser: JBCefBrowser = JBCefBrowser()
     private val cefBrowserService = project.service<CefBrowserService>()
 
-    private val logger = Logger(this.javaClass.simpleName)
+    private val logger = Logger(this.javaClass)
 
     init {
         layout = BorderLayout()

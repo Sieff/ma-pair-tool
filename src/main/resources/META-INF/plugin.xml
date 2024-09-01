@@ -36,10 +36,10 @@
                 serviceInterface="com.github.sieff.mapairtool.services.sourceCode.SourceCodeService"
                 serviceImplementation="com.github.sieff.mapairtool.services.sourceCode.SourceCodeServiceImpl"/>
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.sieff.mapairtool.listeners.ApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
+    <projectListeners>
+        <listener class="com.github.sieff.mapairtool.listeners.DocumentChangeListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
     <actions>
         <action id="com.github.sieff.mapairtool.ui.popup.PopupAction"
                 class="com.github.sieff.mapairtool.ui.popup.PopupAction" text="Show Popup">

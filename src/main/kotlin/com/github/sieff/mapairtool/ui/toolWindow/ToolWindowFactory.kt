@@ -29,7 +29,7 @@ class ToolWindowFactory : ToolWindowFactory {
         private var browser: JBCefBrowser = JBCefBrowser()
         private val cefBrowserService = toolWindow.project.service<CefBrowserService>()
 
-        private val logger = Logger(this.javaClass.simpleName)
+        private val logger = Logger(this.javaClass)
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
             layout = BorderLayout()

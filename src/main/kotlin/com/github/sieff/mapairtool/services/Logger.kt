@@ -1,6 +1,6 @@
 package com.github.sieff.mapairtool.services
 
-class Logger(val className: String) {
+class Logger<T>(private val clazz: Class<T>) {
 
     // Debug level - Light Blue or Cyan
     private val debug = "\u001b[36m"
@@ -21,22 +21,22 @@ class Logger(val className: String) {
     private val reset = "\u001b[0m"
 
     fun debug(msg: Any) {
-        println("${debug}[DEBUG] ${className}:${reset} $msg")
+        println("${debug}[DEBUG] ${clazz.simpleName}:${reset} $msg")
     }
 
     fun info(msg: Any) {
-        println("${info}[INFO] ${className}:${reset} $msg")
+        println("${info}[INFO] ${clazz.simpleName}:${reset} $msg")
     }
 
     fun warn(msg: Any) {
-        println("${warn}[WARN] ${className}:${reset} $msg")
+        println("${warn}[WARN] ${clazz.simpleName}:${reset} $msg")
     }
 
     fun error(msg: Any) {
-        println("${error}[ERROR] ${className}:${reset} $msg")
+        println("${error}[ERROR] ${clazz.simpleName}:${reset} $msg")
     }
 
     fun fatal(msg: Any) {
-        println("${fatal}[FATAL] ${className}:${reset} $msg")
+        println("${fatal}[FATAL] ${clazz.simpleName}:${reset} $msg")
     }
 }

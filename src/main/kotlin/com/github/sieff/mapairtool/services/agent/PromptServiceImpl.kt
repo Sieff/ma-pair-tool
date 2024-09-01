@@ -38,4 +38,7 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addProactiveAgentTask()
             .build()
     }
+
+    override fun dispose() {
+    }
 }

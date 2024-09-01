@@ -19,7 +19,7 @@ class PopupAction : AnAction() {
     private lateinit var popupComponent: PopupComponent
     private var popup: JBPopup? = null
 
-    private val logger = Logger(this.javaClass.simpleName)
+    private val logger = Logger(this.javaClass)
 
     override fun actionPerformed(e: AnActionEvent) {
         if (popup == null || !popup!!.isVisible) {
