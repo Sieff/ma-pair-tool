@@ -83,8 +83,11 @@ class AgentServiceImpl(val project: Project): AgentService {
                     SwingUtilities.invokeLater {
                         PopupInvoker.invokePopup(project)
                         val message = result.choices[0].message.content
-                        chatMessageService.addMessage(getProactiveMessage(message).toAssistantMessage())
-                        PromptInformation.lastAgentMessage = getCurrentTime()
+                        val proactiveMessage = getProactiveMessage(message)
+                        if (proactiveMessage.necessity >= 6) {
+                            chatMessageService.addMessage(proactiveMessage.toAssistantMessage())
+                            PromptInformation.lastAgentMessage = getCurrentTime()
+                        }
                     }
                 }
             }
