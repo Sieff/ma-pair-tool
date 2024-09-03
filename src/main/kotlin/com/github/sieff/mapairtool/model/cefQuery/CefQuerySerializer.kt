@@ -11,6 +11,7 @@ object CefQuerySerializer {
             subclass(WidgetInputQuery::class, WidgetInputQuery.serializer())
             subclass(RequestMessagesQuery::class, RequestMessagesQuery.serializer())
             subclass(RequestToolWindowFocusQuery::class, RequestToolWindowFocusQuery.serializer())
+            subclass(InputChangedEventQuery::class, InputChangedEventQuery.serializer())
         }
     }
 

@@ -1,10 +1,12 @@
 package com.github.sieff.mapairtool.util
 
 import com.github.sieff.mapairtool.model.cefQuery.*
+import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.remoteDev.tracing.getCurrentTime
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.callback.CefQueryCallback
@@ -32,6 +34,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
             CefQueryType.WIDGET_INPUT -> onWidgetInput(request)
             CefQueryType.REQUEST_TOOL_WINDOW_FOCUS -> onRequestToolWindowFocus()
             CefQueryType.REQUEST_MESSAGES -> onRequestMessages()
+            CefQueryType.INPUT_CHANGED_EVENT -> onInputChangedEvent()
         }
 
         return true
@@ -53,5 +56,9 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
 
     private fun onRequestMessages() {
         cefBrowserService.sendCurrentState()
+    }
+
+    private fun onInputChangedEvent() {
+        PromptInformation.lastChatInputEdit = getCurrentTime()
     }
 }

@@ -77,6 +77,16 @@ class AgentServiceImpl(val project: Project): AgentService {
                     continue
                 }
 
+                if (PromptInformation.timeSinceLastChatInputEdit() < 10) {
+                    logger.info("User is typing.")
+                    continue
+                }
+
+                if (PromptInformation.timeSinceLastAgentMessage() < 60) {
+                    logger.info("Communicated recently, not invoking proactive message.")
+                    continue
+                }
+
                 CompletableFuture.supplyAsync {
                     getAiCompletion(promptService.getProactiveAgentPrompt(model))
                 }.thenAccept { result: ChatCompletion ->

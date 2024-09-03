@@ -4,6 +4,7 @@ import com.intellij.remoteDev.tracing.getCurrentTime
 import java.util.concurrent.TimeUnit
 
 object PromptInformation {
+    var lastChatInputEdit: Long = getCurrentTime()
     var lastUserEdit: Long = getCurrentTime()
     var lastUserInteraction: Long = getCurrentTime()
     var lastAgentMessage: Long = getCurrentTime()
@@ -21,5 +22,9 @@ object PromptInformation {
 
     fun timeSinceLastAgentMessage(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastAgentMessage)
+    }
+
+    fun timeSinceLastChatInputEdit(): Long {
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastChatInputEdit)
     }
 }

@@ -9,6 +9,7 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addAgentRole()
             .addMainAgentTask()
             .addKeyInformation()
+            .addSourceCode()
             .addSummary()
             .addConversationHistory()
             .addMainAgentTask()
