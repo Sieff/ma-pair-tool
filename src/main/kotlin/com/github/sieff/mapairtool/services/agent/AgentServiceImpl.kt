@@ -4,7 +4,7 @@ import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.*
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.github.sieff.mapairtool.model.message.*
-import com.github.sieff.mapairtool.services.Logger
+import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
@@ -53,8 +53,16 @@ class AgentServiceImpl(val project: Project): AgentService {
 
     private fun invokeSummaryAgent() {
         CompletableFuture.supplyAsync {
+            if (AppSettingsState.getInstance().state.apiKey == "") {
+                logger.warn("ApiKey not set, can't invoke summary agent.")
+                return@supplyAsync null
+            }
             getAiCompletion(promptService.getSummaryAgentPrompt(model))
-        }.thenAccept { result: ChatCompletion ->
+        }.thenAccept { result: ChatCompletion? ->
+            if (result == null) {
+                return@thenAccept
+            }
+
             val summaryMessage = getSummaryMessage(result.choices[0].message.content)
             if (summaryMessage != null) {
                 PromptInformation.summary = summaryMessage.summary
@@ -82,8 +90,8 @@ class AgentServiceImpl(val project: Project): AgentService {
                     continue
                 }
 
-                if (PromptInformation.timeSinceLastAgentMessage() < 60) {
-                    logger.info("Communicated recently, not invoking proactive message.")
+                if (PromptInformation.timeSinceLastAgentMessage() < 55) {
+                    logger.info("Communicated recently, not invoking proactive message. (${PromptInformation.timeSinceLastAgentMessage()} seconds ago)")
                     continue
                 }
 
@@ -94,8 +102,8 @@ class AgentServiceImpl(val project: Project): AgentService {
                         PopupInvoker.invokePopup(project)
                         val message = result.choices[0].message.content
                         val proactiveMessage = getProactiveMessage(message)
-                        if (proactiveMessage.necessity >= 6) {
-                            chatMessageService.addMessage(proactiveMessage.toAssistantMessage())
+                        if (proactiveMessage.necessity > 3) {
+                            chatMessageService.addMessage(proactiveMessage)
                             PromptInformation.lastAgentMessage = getCurrentTime()
                         }
                     }
@@ -168,27 +176,28 @@ class AgentServiceImpl(val project: Project): AgentService {
     }
 
     private fun getErrorMessage(message: String): AssistantMessage {
-        return AssistantMessage(MessageOrigin.AGENT, message, Emotion.SAD, ArrayList(), false)
+        return AssistantMessage(MessageOrigin.AGENT, message, Emotion.SAD, ArrayList(), false, 1, "")
     }
 
     private fun getAssistantMessage(content: String): AssistantMessage {
         try {
             val rawMessage = MessageSerializer.json.decodeFromString<AssistantMessage>(content)
-            return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, false)
+            return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, false, 5, "")
         } catch (e: Exception) {
             e.message?.let { logger.error(it) }
             return getErrorMessage(Bundle.message("errors.parsingError"))
         }
     }
 
-    private fun getProactiveMessage(content: String): ProactiveMessage {
+    private fun getProactiveMessage(content: String): AssistantMessage {
         try {
-            val rawMessage = MessageSerializer.json.decodeFromString<ProactiveMessage>(content)
+            val rawMessage = MessageSerializer.json.decodeFromString<AssistantMessage>(content)
             logger.debug("Necessity value: ${rawMessage.necessity}")
-            return ProactiveMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, true, rawMessage.thought, rawMessage.necessity)
+            logger.debug("CoT: ${rawMessage.thought}")
+            return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, true, rawMessage.necessity, rawMessage.thought)
         } catch (e: Exception) {
             e.message?.let { logger.error(it) }
-            return getErrorMessage(Bundle.message("errors.parsingError")).toProactiveMessage()
+            return getErrorMessage(Bundle.message("errors.parsingError"))
         }
     }
 

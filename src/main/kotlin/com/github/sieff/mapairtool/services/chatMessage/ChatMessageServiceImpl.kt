@@ -6,12 +6,11 @@ import com.github.sieff.mapairtool.util.observerPattern.publisher.APublisher
 
 class ChatMessageServiceImpl: ChatMessageService, APublisher<ChatMessageState>() {
     private val messages: MutableList<BaseMessage> = mutableListOf()
-    private var widgetMessage: AssistantMessage? = null;
+    private var widgetMessage: AssistantMessage? = null
 
     override fun addMessage(message: BaseMessage) {
         if (message.origin == MessageOrigin.AGENT) {
-            message as AssistantMessage
-            widgetMessage = AssistantMessage(message.origin, message.message, message.emotion, message.reactions, message.proactive);
+            widgetMessage = message as AssistantMessage
         }
 
         messages.add(message)

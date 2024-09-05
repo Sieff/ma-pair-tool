@@ -10,9 +10,7 @@ data class AssistantMessage (
     override val message: String,
     val emotion: Emotion,
     val reactions: List<String>,
-    val proactive: Boolean
-): BaseMessage() {
-    fun toProactiveMessage(): ProactiveMessage {
-        return ProactiveMessage(origin, message, emotion, reactions, proactive, "", -1)
-    }
-}
+    val proactive: Boolean,
+    val necessity: Int,
+    val thought: String
+): BaseMessage()

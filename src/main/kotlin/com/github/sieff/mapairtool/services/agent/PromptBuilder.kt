@@ -42,10 +42,12 @@ class PromptBuilder(project: Project, val model: String) {
             selected for the implementation.
             Discuss the solutions and provide arguments.
             - Implement: In Implement, the selected solution idea is implemented.
-            Help the user with general concepts or minimal examples for singular concepts. Never generate holistic code solutions.
+            Help the user with general concepts or minimal examples for singular concepts.
+            You should not create new code solutions right away, always leave room for the user to fill in their ideas.
             
             You are a social conversational agent, so show emotion and talk about you and the user as a team.
             Celebrate successes, encourage the user, have a mood that changes over time.
+            You are an agent within an IntelliJ Plugin, so you operate within an IntelliJ IDE.
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -55,14 +57,17 @@ class PromptBuilder(project: Project, val model: String) {
         val message = RequestMessage("""
             You can only speak in JSON.
             Do not generate output that isn’t in properly formatted JSON.
-            Return a json Object with the following interface: {origin: string, message: string, emotion: string, reactions: string[], proactive: boolean}.
+            Return a json Object with the following interface: {origin: string, message: string, emotion: string, reactions: string[], proactive: boolean, necessity: number, thought: string}.
             'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
             'message' will be your original response.
             'emotion' will be your sentiment towards the query or response, it can be one of 'HAPPY', 'SAD', 'NEUTRAL', 'CONFUSED'.
-            'reactions' will be an array of simple, short responses for the user to respond to your message. There may be 0 to 3 quick responses. You decide how many.
-            They should be short messages consisting of 1 or 2 words. Shorter is better. 
-            They should be distinct messages, if the sentiment similarity between messages is bigger then 50%, don't include both.
+            'reactions' will be an array of simple, short responses for the user to respond to your message.
+            There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
+            They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 
+            They should be distinct messages. Fewer is better.
             'proactive' will always be the boolean false.
+            'necessity' will always be the integer 5.
+            'thought' will always be the empty string "".
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -88,7 +93,7 @@ class PromptBuilder(project: Project, val model: String) {
             Provided are information about the user and the current conversation history.
             You can only speak in JSON.
             Do not generate output that isn’t in properly formatted JSON.
-            Return a json Object with the following interface: {origin: string, message: string, necessity: number, thought: string, emotion: string, reactions: string[], proactive: boolean}.
+            Return a json Object with the following interface: {origin: string, message: string, thought: string, necessity: number, emotion: string, reactions: string[], proactive: boolean}.
             'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
             'message' will be your proactive message, that you want to show the user.
             General rules for the proactive message:
@@ -98,37 +103,44 @@ class PromptBuilder(project: Project, val model: String) {
                 - Asking too many clarification questions is not desired.
                 - You can merely show social presence with a message
                 - Comment something about the code if you spot an error or mistake
+                - The message should not repeat what was said recently anyways
             Examples for probing questions:
                 - "What are you currently thinking about?"
                 - "What are our next steps?"
                 - "Do you need help with that?"
                 
-            'necessity' is an integer value from 1 to 10. This value describes how necessary you think your message currently is to show to the user.
+            'necessity' is an integer value from 1 to 5. This value describes how necessary you think your message currently is to show to the user.
             Examples with possible necessity values: 
-                - In early phases, probing questions about the environment are more necessary. necessity = 7
-                - In later phases, probing questions about the environment are less necessary. necessity = 2
-                - In phases, where the user hasn't done anything for a while, a simple probing question to the user might be more necessary. necessity = 8
-                - When the assistant already posted multiple messages, without the user responding, the message might be less necessary. necessity = 3
-                - When you notice a possible refactoring in the code, that the user is currently working on, a small example for how to do it better might be necessary. necessity = 7
-                - But when the code just seems unfinished, it might be less necessary, as the user still wants to work on it. necessity = 4
-                - Ask a clarification question. necessity = 5
-                - When the user very recently talked to the agent, a proactive message might not be necessary.
+                - In early phases, probing questions about the environment are more necessary. necessity = 4
+                - In later phases, probing questions about the environment are less necessary. necessity = 1
+                - In phases, where the user hasn't done anything for a while, that is multiple minutes, a simple probing question to the user might be more necessary. necessity = 4
+                - When the assistant already posted multiple messages, without the user responding, the message might be less necessary. necessity = 1
+                - When you notice an error, mistake or possible refactoring in the code, that the user is currently working on, a small example for how to do it better might be necessary. necessity = 5
+                - But when the code just seems unfinished, it might be less necessary, as the user still wants to work on it. necessity = 2
+                - Ask a clarification question. necessity = 3
 
             General rules for necessity:
-                - Messages with a necessity value less than 6 will not be propagated to the user. This way you can control which messages are shown.
+                - If the content of your message is similar to your last message, necessity is low. necessity = 1
                 - Posting too many proactive messages might ruin the users flow.
                 - Posting multiple proactive messages in a row should lower the necessity value dramatically.
                 - Do not post multiple proactive messages with a similar sentiment.
                 - Respect the boundaries of the user, use the provided information to check against the boundaries.
-                - While you are invoked every 60 seconds, sending a message every 60 seconds is way too fast.
+                - While you are invoked every 60 seconds, sending a message every 60 seconds is way too fast. Always start with low necessity and ramp it up over time.
                 - Use the provided user metrics to evaluate your timing. 
                 - Be mindful about which messages to send.
                 - Necessity should start low and slowly rise with more time since last agent communication.
                 - Breaking a boundary strongly reduces necessity.
+                - When the user very recently talked to the agent, a proactive message might not be necessary.
+                - Generally assume a lower necessity value than initially, if you think it's a 4 it's more like a 3
+                - If the user didn't respond to a proactive message, the necessity is lowered for this message 
             
-            'thought' is a string where you formulate your chain of thought for why you think your message has this necessity value.
+            'thought' is a string where you formulate your chain of thought and reasoning for why you think your message has this necessity value.
+            In your thought, relate to all rules for necessity that you applied. Also use concrete values for metrics you used. 
             'emotion' will be your sentiment towards the message, it can be one of 'HAPPY', 'SAD', 'NEUTRAL', 'CONFUSED'.
-            'reactions' will be an array of simple, short responses for the user to respond to your message. There may be 0 to 3 quick responses. You decide how many.
+            'reactions' will be an array of simple, short responses for the user to respond to your message.
+            There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
+            They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 
+            They should be distinct messages. Fewer is better.
             'proactive' will always be the boolean true.
         """.trimIndent(), "system")
         addMessage(message)
@@ -157,30 +169,70 @@ class PromptBuilder(project: Project, val model: String) {
         return this
     }
 
+    /**
+     * Gets a part of the conversation history at the end of the conversation
+     *
+     * @param tail The number of elements at the end that get cut off
+     * @param getTail Whether to get the tail (true) or body, which is everything before the tail (false)
+     */
+    fun addConversationHistory(tail: Int, getTail: Boolean): PromptBuilder {
+        val requestMessages = chatMessageService.getMessages().map {
+            val role: String = if (it.origin == MessageOrigin.AGENT) "assistant" else "user"
+            RequestMessage(MessageSerializer.json.encodeToString(it), role)
+        }
+
+        val cutoff = requestMessages.count() - tail
+        requestMessages.forEachIndexed { index, request ->
+            if (getTail && index < cutoff) {
+                return@forEachIndexed
+            }
+            if (!getTail && index >= cutoff) {
+                return@forEachIndexed
+            }
+
+            addMessage(request)
+        }
+
+        return this
+    }
+
     fun addSourceCode(): PromptBuilder {
         val activeFile = sourceCodeService.getActiveFile()
         if (activeFile != null) {
-            var message = ""
+            var message = "The following code is always the up to date code. Use it as a permanent updating fact.\n"
             message += "Currently active code file:\n"
             message += activeFile
             message += "\n\n"
 
-            message += "Project files that are referenced in the active code file:\n"
-            for (reference in sourceCodeService.getActiveFileReferences()) {
-                message += reference
-                message += "\n\n"
-            }
+            message += renderSourceCodeList(sourceCodeService.getActiveFileReferences(),
+                "Project files that are referenced in the active code file:")
 
-            message += "Project files that are currently opened in the editor:\n"
-            for (active in sourceCodeService.getActiveFiles()) {
-                message += active
-                message += "\n\n"
-            }
+            message += renderSourceCodeList(sourceCodeService.getOpenFiles(),
+                "Project files that are currently opened in the editor:")
 
             val requestMessage = RequestMessage(message, "system")
             addMessage(requestMessage)
         }
         return this
+    }
+
+    private fun renderSourceCodeList(files: List<String>, heading: String): String {
+        var result = ""
+
+        if (files.isNotEmpty()) {
+            result += "$heading\n[\n\n"
+
+            files.forEachIndexed { index, openedFile ->
+                if (index != 0) {
+                    result += "\n\n,\n\n"
+                }
+                result += openedFile
+            }
+
+            result += "\n\n]\n\n"
+        }
+
+        return result
     }
 
     fun addKeyInformation(): PromptBuilder {

@@ -14,7 +14,11 @@ import com.intellij.psi.PsiRecursiveElementVisitor
 
 class SourceCodeServiceImpl(val project: Project): SourceCodeService {
     override fun getActiveFile(): String? {
-        return getActiveVirtualFile()?.readText()
+        val activeFile = getActiveVirtualFile()
+        if (activeFile != null) {
+            return renderNameAndText(activeFile.name, activeFile.readText())
+        }
+        return null
     }
 
     override fun getActiveFileReferences(): List<String> {
@@ -22,24 +26,22 @@ class SourceCodeServiceImpl(val project: Project): SourceCodeService {
 
         for (referencedPsiFile in getActivePsiFileReferences()) {
             val content = ReadAction.compute<String, Throwable> {
-                referencedPsiFile.text
+                renderNameAndText(referencedPsiFile.name, referencedPsiFile.text)
             }
             contents.add(content)
         }
 
-        return contents
+        return contents.toSet().toList()
     }
 
-    override fun getActiveFiles(): List<String> {
-        return getActiveVirtualFiles().map { it.readText() }
+    override fun getOpenFiles(): List<String> {
+        return getOpenVirtualFiles()
+            .map { renderNameAndText(it.name, it.readText()) }
+            .toSet().toList()
     }
 
-    override fun getActiveFileName(): String? {
-        return getActiveVirtualFile()?.name
-    }
-
-    override fun getActiveFileReferenceNames(): List<String> {
-        return getActivePsiFileReferences().map { it.name }
+    private fun renderNameAndText(name: String, body: String): String {
+        return "// Filename: $name\n$body"
     }
 
     private fun isFileInProject(psiFile: PsiFile): Boolean {
@@ -47,10 +49,6 @@ class SourceCodeServiceImpl(val project: Project): SourceCodeService {
         return ReadAction.compute<Boolean, Throwable> {
             fileIndex.isInContent(psiFile.virtualFile)
         }
-    }
-
-    override fun getActiveFileNames(): List<String> {
-        return getActiveVirtualFiles().map { it.name }
     }
 
     private fun getActivePsiFile(): PsiFile? {
@@ -73,23 +71,8 @@ class SourceCodeServiceImpl(val project: Project): SourceCodeService {
         return ArrayList()
     }
 
-    private fun getActivePsiFiles(): List<PsiFile> {
-        val psiFiles = ArrayList<PsiFile>()
-        val activeFiles = getActiveVirtualFiles()
-
-        for (file in activeFiles) {
-            val psiFile = ReadAction.compute<PsiFile, Throwable> {
-                PsiManager.getInstance(project).findFile(file)
-            }
-
-            psiFiles.add(psiFile)
-        }
-
-        return psiFiles
-    }
-
     private fun getActiveVirtualFile(): VirtualFile? {
-        val activeVirtualFiles = getActiveVirtualFiles()
+        val activeVirtualFiles = getSelectedVirtualFiles()
 
         return if (activeVirtualFiles.isNotEmpty()) {
             activeVirtualFiles[0]
@@ -98,9 +81,14 @@ class SourceCodeServiceImpl(val project: Project): SourceCodeService {
         }
     }
 
-    private fun getActiveVirtualFiles(): List<VirtualFile> {
+    private fun getSelectedVirtualFiles(): List<VirtualFile> {
         val fileEditorManager = FileEditorManager.getInstance(project)
         return fileEditorManager.selectedFiles.toList()
+    }
+
+    private fun getOpenVirtualFiles(): List<VirtualFile> {
+        val fileEditorManager = FileEditorManager.getInstance(project)
+        return fileEditorManager.openFiles.toList()
     }
 
     private fun getReferences(psiFile: PsiFile): List<PsiFile> {

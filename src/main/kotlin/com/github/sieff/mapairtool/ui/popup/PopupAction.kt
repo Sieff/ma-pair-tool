@@ -1,6 +1,6 @@
 package com.github.sieff.mapairtool.ui.popup
 
-import com.github.sieff.mapairtool.services.Logger
+import com.github.sieff.mapairtool.util.Logger
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopup

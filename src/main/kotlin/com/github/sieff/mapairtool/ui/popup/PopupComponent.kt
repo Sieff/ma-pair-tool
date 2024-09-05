@@ -1,6 +1,6 @@
 package com.github.sieff.mapairtool.ui.popup
 
-import com.github.sieff.mapairtool.services.Logger
+import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.CefQueryHandler
 import com.intellij.openapi.Disposable

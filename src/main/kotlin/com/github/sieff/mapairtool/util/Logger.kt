@@ -1,4 +1,4 @@
-package com.github.sieff.mapairtool.services
+package com.github.sieff.mapairtool.util
 
 class Logger<T>(private val clazz: Class<T>) {
 

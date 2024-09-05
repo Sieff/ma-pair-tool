@@ -2,7 +2,7 @@ package com.github.sieff.mapairtool.services.cefBrowser
 
 import com.github.sieff.mapairtool.model.dataPacket.*
 import com.github.sieff.mapairtool.model.message.ChatMessageState
-import com.github.sieff.mapairtool.services.Logger
+import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

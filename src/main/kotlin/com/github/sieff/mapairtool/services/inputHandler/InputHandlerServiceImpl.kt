@@ -1,7 +1,7 @@
 package com.github.sieff.mapairtool.services.inputHandler
 
 import com.github.sieff.mapairtool.model.message.Message
-import com.github.sieff.mapairtool.services.Logger
+import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.agent.AgentService
 import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
