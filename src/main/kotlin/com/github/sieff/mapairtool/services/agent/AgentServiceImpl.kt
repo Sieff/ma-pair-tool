@@ -38,6 +38,7 @@ class AgentServiceImpl(val project: Project): AgentService {
     }
 
     override fun invokeMainAgent() {
+        logger.debug(chatMessageService.getMessages().count())
         CompletableFuture.supplyAsync {
             getAiCompletion(promptService.getMainAgentPrompt(model))
         }.thenAccept { result: ChatCompletion ->

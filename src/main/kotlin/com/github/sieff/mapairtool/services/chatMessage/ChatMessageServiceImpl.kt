@@ -5,7 +5,7 @@ import com.github.sieff.mapairtool.util.observerPattern.publisher.APublisher
 
 
 class ChatMessageServiceImpl: ChatMessageService, APublisher<ChatMessageState>() {
-    private val messages: MutableList<BaseMessage> = mutableListOf()
+    private var messages: MutableList<BaseMessage> = mutableListOf()
     private var widgetMessage: AssistantMessage? = null
 
     override fun addMessage(message: BaseMessage) {
@@ -23,5 +23,16 @@ class ChatMessageServiceImpl: ChatMessageService, APublisher<ChatMessageState>()
 
     override fun getState(): ChatMessageState {
         return ChatMessageState(messages, widgetMessage)
+    }
+
+    override fun resetMessages() {
+        // TODO("Log Current Conversation")
+        messages = mutableListOf()
+        widgetMessage = null
+        publish(ChatMessageState(messages, widgetMessage))
+    }
+
+    override fun removeLastMessage() {
+        messages.removeAt(messages.lastIndex)
     }
 }

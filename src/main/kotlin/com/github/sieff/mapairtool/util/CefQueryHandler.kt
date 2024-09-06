@@ -1,8 +1,10 @@
 package com.github.sieff.mapairtool.util
 
 import com.github.sieff.mapairtool.model.cefQuery.*
+import com.github.sieff.mapairtool.services.agent.AgentService
 import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
+import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -15,6 +17,8 @@ import org.cef.handler.CefMessageRouterHandlerAdapter
 class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
     private val inputHandlerService = project.service<InputHandlerService>()
     private val cefBrowserService = project.service<CefBrowserService>()
+    private val chatMessageService = project.service<ChatMessageService>()
+    private val agentService = project.service<AgentService>()
 
     override fun onQuery(
         browser: CefBrowser?,
@@ -35,6 +39,8 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
             CefQueryType.REQUEST_TOOL_WINDOW_FOCUS -> onRequestToolWindowFocus()
             CefQueryType.REQUEST_MESSAGES -> onRequestMessages()
             CefQueryType.INPUT_CHANGED_EVENT -> onInputChangedEvent()
+            CefQueryType.RESET_CONVERSATION -> onResetConversation()
+            CefQueryType.REGENERATE_LAST_MESSAGE -> onRegenerateLastMessage()
         }
 
         return true
@@ -60,5 +66,14 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
 
     private fun onInputChangedEvent() {
         PromptInformation.lastChatInputEdit = getCurrentTime()
+    }
+
+    private fun onResetConversation() {
+        chatMessageService.resetMessages()
+    }
+
+    private fun onRegenerateLastMessage() {
+        chatMessageService.removeLastMessage()
+        agentService.invokeMainAgent()
     }
 }

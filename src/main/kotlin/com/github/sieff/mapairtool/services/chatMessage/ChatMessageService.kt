@@ -8,4 +8,6 @@ interface ChatMessageService: Publisher<ChatMessageState> {
     fun addMessage(message: BaseMessage)
     fun getMessages(): List<BaseMessage>
     fun getState(): ChatMessageState
+    fun resetMessages()
+    fun removeLastMessage()
 }
