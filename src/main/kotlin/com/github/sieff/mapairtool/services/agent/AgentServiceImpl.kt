@@ -91,7 +91,7 @@ class AgentServiceImpl(val project: Project): AgentService {
                     continue
                 }
 
-                if (PromptInformation.timeSinceLastAgentMessage() < 55) {
+                if (PromptInformation.timeSinceLastAgentMessage() < 60) {
                     logger.info("Communicated recently, not invoking proactive message. (${PromptInformation.timeSinceLastAgentMessage()} seconds ago)")
                     continue
                 }

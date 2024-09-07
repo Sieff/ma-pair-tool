@@ -17,6 +17,8 @@
                 id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 displayName="Pair Tool"/>
 
+        <postStartupActivity implementation="com.github.sieff.mapairtool.services.logWriter.LogWriterStartupActivity"/>
+
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.agent.AgentService"
                 serviceImplementation="com.github.sieff.mapairtool.services.agent.AgentServiceImpl"/>
@@ -35,6 +37,9 @@
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.sourceCode.SourceCodeService"
                 serviceImplementation="com.github.sieff.mapairtool.services.sourceCode.SourceCodeServiceImpl"/>
+        <projectService
+                serviceInterface="com.github.sieff.mapairtool.services.logWriter.LogWriterService"
+                serviceImplementation="com.github.sieff.mapairtool.services.logWriter.LogWriterServiceImpl"/>
     </extensions>
     <projectListeners>
         <listener class="com.github.sieff.mapairtool.listeners.DocumentChangeListener"
