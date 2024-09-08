@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 
 
 class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublisher<ChatMessageState>() {
+    private val logWriterService = project.service<LogWriterService>()
     private var messages: MutableList<BaseMessage> = mutableListOf()
     private var widgetMessage: AssistantMessage? = null
 
@@ -16,6 +17,7 @@ class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublish
             widgetMessage = message as AssistantMessage
         }
 
+        logWriterService.logMessage(message)
         messages.add(message)
         publish(ChatMessageState(messages, widgetMessage))
     }
@@ -29,14 +31,8 @@ class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublish
     }
 
     override fun resetMessages() {
-        project.service<LogWriterService>().startNewLog()
         messages = mutableListOf()
         widgetMessage = null
-        publish(ChatMessageState(messages, widgetMessage))
-    }
-
-    override fun removeLastMessage() {
-        messages.removeAt(messages.lastIndex)
         publish(ChatMessageState(messages, widgetMessage))
     }
 }

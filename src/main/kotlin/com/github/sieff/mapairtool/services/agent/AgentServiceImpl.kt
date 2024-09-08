@@ -6,6 +6,7 @@ import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.github.sieff.mapairtool.model.message.*
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
+import com.github.sieff.mapairtool.services.logWriter.LogWriterService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.popup.PopupInvoker
 import com.intellij.openapi.components.service
@@ -26,6 +27,7 @@ import kotlin.concurrent.thread
 class AgentServiceImpl(val project: Project): AgentService {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
+    private val logWriterService = project.service<LogWriterService>()
 
     private val logger = Logger(this.javaClass)
 
@@ -70,9 +72,11 @@ class AgentServiceImpl(val project: Project): AgentService {
                 PromptInformation.keyInformation = summaryMessage.keyInformation
                 PromptInformation.boundaries = summaryMessage.boundaries
 
-                logger.debug(PromptInformation.summary)
-                logger.debug(PromptInformation.keyInformation)
-                logger.debug(PromptInformation.boundaries)
+                logger.debug("Summary: ${PromptInformation.summary}")
+                logger.debug("Key information: ${PromptInformation.keyInformation}")
+                logger.debug("Boundaries: ${PromptInformation.boundaries}")
+
+                logWriterService.logSummary(summaryMessage)
             }
         }
     }

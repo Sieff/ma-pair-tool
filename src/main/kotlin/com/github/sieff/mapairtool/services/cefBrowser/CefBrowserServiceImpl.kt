@@ -55,6 +55,11 @@ class CefBrowserServiceImpl(
         }
     }
 
+    override fun updateLogStatus(status: Boolean) {
+        val packet = UpdateLogStatusPacket(status, DataPacketType.UPDATE_LOG_STATUS)
+        sendPacketToBrowser(toolWindowBrowser, packet)
+    }
+
     private fun sendPacketToBrowser(browser: JBCefBrowser?, packet: DataPacket) {
         browser?.cefBrowser?.executeJavaScript(
             "window.sendDataPacket(${encodePacketToJson(packet)})",

@@ -1,58 +1,70 @@
 package com.github.sieff.mapairtool.services.logWriter
 
 import com.github.sieff.mapairtool.model.message.*
-import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
+import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 
 class LogWriterServiceImpl(val project: Project): LogWriterService {
-    private val chatMessageService = project.service<ChatMessageService>()
-
     private val logger = Logger(this.javaClass)
     private val LOG_DIR = ".conversationLog"
 
     private var currentLog: File? = null
 
-    init {
-        logger.info("Created LogWriterService")
-        chatMessageService.subscribe(this)
+    override fun startNewLog() {
+        currentLog = createNewLog()
+
+        val success =  currentLog != null
+        project.service<CefBrowserService>().updateLogStatus(success)
     }
 
-    override fun startNewLog(): Boolean {
+    private fun createNewLog(): File? {
         try {
             val logDirPath = createLogDir()
 
             val logFile = createLogFile(logDirPath)
 
-            currentLog = logFile
-
-            return true
+            return logFile
         } catch (e: Exception) {
             e.message?.let { logger.fatal(it) }
-            logger.fatal(e.printStackTrace())
 
-            return false
+            return null
         }
     }
 
-    override fun notify(data: ChatMessageState) {
-        if (currentLog == null) {
-            val createdLogFile = startNewLog()
-            if (!createdLogFile) {
-                throw Exception("Could not start log")
-            }
+    override fun logMessage(message: BaseMessage) {
+        if (!logIsReady()) {
+            startNewLog()
         }
 
-        currentLog!!.bufferedWriter().use { out ->
-            data.messages.forEach {
-                out.write(logMessage(it))
+        if (logIsReady()) {
+            FileOutputStream(currentLog!!, true).bufferedWriter().use { out ->
+                out.write(createLogMessage(message))
             }
         }
+    }
+
+    override fun logSummary(summary: SummaryMessage) {
+        if (!logIsReady()) {
+            startNewLog()
+        }
+
+        if (logIsReady()) {
+            FileOutputStream(currentLog!!, true).bufferedWriter().use { out ->
+                out.write("${Json.encodeToString(summary)}\n")
+            }
+        }
+    }
+
+    private fun logIsReady(): Boolean {
+        return currentLog != null && currentLog!!.exists()
     }
 
     private fun createLogDir(): Path {
@@ -93,7 +105,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         return logFile
     }
 
-    private fun logMessage(message: BaseMessage): String {
+    private fun createLogMessage(message: BaseMessage): String {
         var logEntry = ""
 
         if (message.origin === MessageOrigin.AGENT) {

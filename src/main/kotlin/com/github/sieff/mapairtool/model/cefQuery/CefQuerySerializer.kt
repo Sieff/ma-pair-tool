@@ -12,7 +12,6 @@ object CefQuerySerializer {
             subclass(RequestMessagesQuery::class, RequestMessagesQuery.serializer())
             subclass(RequestToolWindowFocusQuery::class, RequestToolWindowFocusQuery.serializer())
             subclass(InputChangedEventQuery::class, InputChangedEventQuery.serializer())
-            subclass(RegenerateLastMessageQuery::class, RegenerateLastMessageQuery.serializer())
             subclass(ResetConversationQuery::class, ResetConversationQuery.serializer())
         }
     }
