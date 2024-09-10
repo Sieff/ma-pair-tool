@@ -1,12 +1,14 @@
 package com.github.sieff.mapairtool.util
 
 import com.github.sieff.mapairtool.model.cefQuery.*
+import com.github.sieff.mapairtool.model.dataPacket.ColorScheme
 import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
 import com.intellij.openapi.components.service
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.remoteDev.tracing.getCurrentTime
 import org.cef.browser.CefBrowser
@@ -40,6 +42,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
             CefQueryType.REQUEST_MESSAGES -> onRequestMessages()
             CefQueryType.INPUT_CHANGED_EVENT -> onInputChangedEvent()
             CefQueryType.RESET_CONVERSATION -> onResetConversation()
+            CefQueryType.REQUEST_COLOR_SCHEME -> onRequestColorScheme()
         }
 
         return true
@@ -71,5 +74,13 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
         logWriterService.logReset()
         logWriterService.startNewLog()
         chatMessageService.resetMessages()
+    }
+
+    private fun onRequestColorScheme() {
+        if (EditorColorsManager.getInstance().isDarkEditor) {
+            cefBrowserService.updateColorScheme(ColorScheme.DARK)
+        } else {
+            cefBrowserService.updateColorScheme(ColorScheme.LIGHT)
+        }
     }
 }

@@ -13,6 +13,7 @@ object CefQuerySerializer {
             subclass(RequestToolWindowFocusQuery::class, RequestToolWindowFocusQuery.serializer())
             subclass(InputChangedEventQuery::class, InputChangedEventQuery.serializer())
             subclass(ResetConversationQuery::class, ResetConversationQuery.serializer())
+            subclass(RequestColorSchemeQuery::class, RequestColorSchemeQuery.serializer())
         }
     }
 

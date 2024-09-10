@@ -1,5 +1,6 @@
 package com.github.sieff.mapairtool.services.cefBrowser
 
+import com.github.sieff.mapairtool.model.dataPacket.ColorScheme
 import com.github.sieff.mapairtool.model.message.ChatMessageState
 import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
 import com.intellij.ui.jcef.JBCefBrowser
@@ -12,4 +13,5 @@ interface CefBrowserService: Observer<ChatMessageState> {
     fun requestToolWindowFocus()
     fun updateLogStatus(status: Boolean)
     fun updateBundle(bundle: String)
+    fun updateColorScheme(colorScheme: ColorScheme)
 }
