@@ -18,6 +18,7 @@
                 displayName="Pair Tool"/>
 
         <postStartupActivity implementation="com.github.sieff.mapairtool.services.logWriter.LogWriterStartupActivity"/>
+        <postStartupActivity implementation="com.github.sieff.mapairtool.services.cefBrowser.SetLocaleStartupActivity"/>
 
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.agent.AgentService"

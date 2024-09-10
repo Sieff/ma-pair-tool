@@ -63,6 +63,14 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
     }
 
+    override fun logReset() {
+        if (logIsReady()) {
+            FileOutputStream(currentLog!!, true).bufferedWriter().use { out ->
+                out.write("\"Conversation reset\"\n")
+            }
+        }
+    }
+
     private fun logIsReady(): Boolean {
         return currentLog != null && currentLog!!.exists()
     }

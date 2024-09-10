@@ -60,6 +60,12 @@ class CefBrowserServiceImpl(
         sendPacketToBrowser(toolWindowBrowser, packet)
     }
 
+    override fun updateBundle(bundle: String) {
+        val packet = UpdateBundlePacket(bundle, DataPacketType.UPDATE_BUNDLE)
+        sendPacketToBrowser(toolWindowBrowser, packet)
+        sendPacketToBrowser(widgetBrowser, packet)
+    }
+
     private fun sendPacketToBrowser(browser: JBCefBrowser?, packet: DataPacket) {
         browser?.cefBrowser?.executeJavaScript(
             "window.sendDataPacket(${encodePacketToJson(packet)})",

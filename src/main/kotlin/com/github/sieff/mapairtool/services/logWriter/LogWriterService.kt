@@ -7,4 +7,5 @@ interface LogWriterService {
     fun startNewLog()
     fun logMessage(message: BaseMessage)
     fun logSummary(summary: SummaryMessage)
+    fun logReset()
 }

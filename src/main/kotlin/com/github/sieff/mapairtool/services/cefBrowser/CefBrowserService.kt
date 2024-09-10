@@ -11,4 +11,5 @@ interface CefBrowserService: Observer<ChatMessageState> {
     fun sendCurrentState()
     fun requestToolWindowFocus()
     fun updateLogStatus(status: Boolean)
+    fun updateBundle(bundle: String)
 }
