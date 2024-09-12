@@ -128,6 +128,7 @@ class AgentServiceImpl(val project: Project): AgentService {
             val responseCode: Int = connection.getResponseCode()
             if (responseCode != 200) {
                 logger.error("Response Code: $responseCode")
+                logger.error("Response: ${readResponse(connection)}")
                 return getErrorResponse(Bundle.message("errors.apiError"))
             }
 

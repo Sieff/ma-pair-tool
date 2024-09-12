@@ -7,6 +7,7 @@ enum class Emotion {
     @SerialName("HAPPY") HAPPY,
     @SerialName("BORED") BORED,
     @SerialName("PERPLEXED") PERPLEXED,
+    @SerialName("CONFUSED") CONFUSED,
     @SerialName("CONCENTRATED") CONCENTRATED,
     @SerialName("DEPRESSED") DEPRESSED,
     @SerialName("SURPRISED") SURPRISED,
@@ -15,6 +16,5 @@ enum class Emotion {
     @SerialName("SAD") SAD,
     @SerialName("FEARFUL") FEARFUL,
     @SerialName("ANTICIPATING") ANTICIPATING,
-    @SerialName("TRUSTING") TRUSTING,
-    @SerialName("DISGUSTED") DISGUSTED
+    @SerialName("DISGUST") DISGUST
 }

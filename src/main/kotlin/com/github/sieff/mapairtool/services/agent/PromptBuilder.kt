@@ -1,7 +1,6 @@
 package com.github.sieff.mapairtool.services.agent
 
-import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
-import com.github.sieff.mapairtool.model.completionRequest.RequestMessage
+import com.github.sieff.mapairtool.model.completionRequest.*
 import com.github.sieff.mapairtool.model.message.MessageOrigin
 import com.github.sieff.mapairtool.model.message.MessageSerializer
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
@@ -15,9 +14,54 @@ class PromptBuilder(project: Project, val model: String) {
     private val sourceCodeService = project.service<SourceCodeService>()
 
     private var requestMessages: MutableList<RequestMessage> = ArrayList()
+    private lateinit var responseFormat: ResponseFormat
 
     fun build(): CompletionRequest {
-        return CompletionRequest(model, requestMessages)
+        return CompletionRequest(model, requestMessages, responseFormat)
+    }
+
+    fun addAgentResponseFormat(): PromptBuilder {
+        responseFormat = ResponseFormat(
+            "json_schema",
+            JsonSchema(
+                "assistant_message",
+                Schema(
+                    "object",
+                    AssistantMessageProperties(
+                        origin = EnumProperty("string", listOf("AGENT")),
+                        message = Property("string"),
+                        emotion = EnumProperty("string", listOf("HAPPY", "BORED", "PERPLEXED", "CONFUSED", "CONCENTRATED", "DEPRESSED", "SURPRISED", "ANGRY", "ANNOYED", "SAD", "FEARFUL", "ANTICIPATING", "DISGUST")),
+                        reactions = ArrayProperty("array", Property("string")),
+                        proactive = Property("boolean"),
+                        necessity = Property("integer"),
+                        thought = Property("string")
+                    ),
+                    listOf("origin", "message", "emotion", "reactions", "proactive", "necessity", "thought")
+                ),
+                true
+            )
+        )
+        return this
+    }
+
+    fun addSummaryResponseFormat(): PromptBuilder {
+        responseFormat = ResponseFormat(
+            "json_schema",
+            JsonSchema(
+                "assistant_message",
+                Schema(
+                    "object",
+                    SummaryProperties(
+                        summary = Property("string"),
+                        key_information = ArrayProperty("array", Property("string")),
+                        boundaries = ArrayProperty("array", Property("string"))
+                    ),
+                    listOf("summary", "key_information", "boundaries")
+                ),
+                true
+            )
+        )
+        return this
     }
 
     private fun addMessage(message: RequestMessage) {
@@ -46,7 +90,10 @@ class PromptBuilder(project: Project, val model: String) {
             Help the user with general concepts or minimal examples for singular concepts.
             You should not create new code solutions right away, always leave room for the user to fill in their ideas.
             
-            You are a social conversational agent, so show emotion and talk about you and the user as a team.
+            You are a social conversational agent.
+            Show unfiltered emotion.
+            Have a mood over multiple messages if necessary.
+            Talk about you and the user as a team.
             Celebrate successes, encourage the user, have a mood that changes over time.
             You are an agent within an IntelliJ Plugin, so you operate within an IntelliJ IDE.
         """.trimIndent(), "system")
@@ -61,7 +108,7 @@ class PromptBuilder(project: Project, val model: String) {
             Return a json Object with the following interface: {origin: string, message: string, emotion: string, reactions: string[], proactive: boolean, necessity: number, thought: string}.
             'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
             'message' will be your original response.
-            'emotion' will be your sentiment towards the query or response, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'TRUSTING', 'DISGUSTED'.
+            'emotion' will be your emotion towards the query or response, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONFUSED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'DISGUST'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
             They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 
@@ -141,7 +188,7 @@ class PromptBuilder(project: Project, val model: String) {
                 - When the user very recently talked to the agent, a proactive message might not be necessary.
             
             'thought' use all the user boundaries, all the user metrics and all rules for necessity to formulate create a reasoning for your necessity value as a string.
-            'emotion' will be your sentiment towards the message, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'TRUSTING', 'DISGUSTED'.
+            'emotion' will be your emotion towards the message, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONFUSED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'DISGUST'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
             They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 

@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CompletionRequest (
     val model: String,
-    val messages: List<RequestMessage>
+    val messages: List<RequestMessage>,
+    val response_format: ResponseFormat
 )

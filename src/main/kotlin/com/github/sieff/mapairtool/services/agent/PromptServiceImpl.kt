@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 class PromptServiceImpl(val project: Project): PromptService {
     override fun getMainAgentPrompt(model: String): CompletionRequest {
         return PromptBuilder(project, model)
+            .addAgentResponseFormat()
             .addAgentRole()
             .addMainAgentTask()
             .addKeyInformation()
@@ -19,6 +20,7 @@ class PromptServiceImpl(val project: Project): PromptService {
 
     override fun getSummaryAgentPrompt(model: String): CompletionRequest {
         return PromptBuilder(project, model)
+            .addSummaryResponseFormat()
             .addAgentRole()
             .addSummaryAgentTask()
             .addKeyInformation()
@@ -30,6 +32,7 @@ class PromptServiceImpl(val project: Project): PromptService {
 
     override fun getProactiveAgentPrompt(model: String): CompletionRequest {
         return PromptBuilder(project, model)
+            .addAgentResponseFormat()
             .addAgentRole()
             .addProactiveAgentTask()
             .addUserBoundaries()
