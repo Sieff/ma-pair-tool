@@ -4,8 +4,17 @@ import kotlinx.serialization.*
 
 @Serializable
 enum class Emotion {
-    @SerialName("NEUTRAL") NEUTRAL,
     @SerialName("HAPPY") HAPPY,
+    @SerialName("BORED") BORED,
+    @SerialName("PERPLEXED") PERPLEXED,
+    @SerialName("CONCENTRATED") CONCENTRATED,
+    @SerialName("DEPRESSED") DEPRESSED,
+    @SerialName("SURPRISED") SURPRISED,
+    @SerialName("ANGRY") ANGRY,
+    @SerialName("ANNOYED") ANNOYED,
     @SerialName("SAD") SAD,
-    @SerialName("CONFUSED") CONFUSED
+    @SerialName("FEARFUL") FEARFUL,
+    @SerialName("ANTICIPATING") ANTICIPATING,
+    @SerialName("TRUSTING") TRUSTING,
+    @SerialName("DISGUSTED") DISGUSTED
 }

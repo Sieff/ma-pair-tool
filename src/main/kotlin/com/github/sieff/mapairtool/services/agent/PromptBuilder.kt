@@ -61,7 +61,7 @@ class PromptBuilder(project: Project, val model: String) {
             Return a json Object with the following interface: {origin: string, message: string, emotion: string, reactions: string[], proactive: boolean, necessity: number, thought: string}.
             'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
             'message' will be your original response.
-            'emotion' will be your sentiment towards the query or response, it can be one of 'HAPPY', 'SAD', 'NEUTRAL', 'CONFUSED'.
+            'emotion' will be your sentiment towards the query or response, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'TRUSTING', 'DISGUSTED'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
             They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 
@@ -100,13 +100,19 @@ class PromptBuilder(project: Project, val model: String) {
             'origin' is the message origin, since you are the agent this will always be the string 'AGENT'.
             'message' will be your proactive message, that you want to show the user.
             General rules for the proactive message:
-                - Often it is enough to ask a simple probing questions to start a conversation
-                - Generally stay on task, which is pair programming
+                - Most importantly: The message should not repeat or be similar to a previous message
+                - As a first step you should analyze the source code. If there is something odd about the currently active file, then comment about it.
                 - Ask a clarification question, when there is information need.
-                - Asking too many clarification questions is not desired.
+                - Propose next steps
+                - Often it is enough to ask a simple probing questions to start a conversation
                 - You can merely show social presence with a message
-                - Comment something about the code if you spot an error or mistake
-                - The message should not repeat what was said recently anyways
+            Examples for analyzing source code:
+                - "I think you can simplify this code [insert reference to code or code example]"
+                - "I think you made a mistake here [insert reference to code or code example]"
+                - "I think you can apply [insert design pattern] to [problem]"
+            Examples for clarification questions:
+                - "I noticed [x], am I right to assume [y]?"
+                - "Is it correct, that [x]?"
             Examples for probing questions:
                 - "What are you currently thinking about?"
                 - "What are our next steps?"
@@ -135,7 +141,7 @@ class PromptBuilder(project: Project, val model: String) {
                 - When the user very recently talked to the agent, a proactive message might not be necessary.
             
             'thought' use all the user boundaries, all the user metrics and all rules for necessity to formulate create a reasoning for your necessity value as a string.
-            'emotion' will be your sentiment towards the message, it can be one of 'HAPPY', 'SAD', 'NEUTRAL', 'CONFUSED'.
+            'emotion' will be your sentiment towards the message, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'TRUSTING', 'DISGUSTED'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
             They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 

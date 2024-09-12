@@ -47,7 +47,11 @@ class AgentServiceImpl(val project: Project): AgentService {
             SwingUtilities.invokeLater {
                 PopupInvoker.invokePopup(project)
                 val message = result.choices[0].message.content
-                chatMessageService.addMessage(getAssistantMessage(message))
+                val assistantMessage = getAssistantMessage(message)
+                chatMessageService.addMessage(assistantMessage)
+
+                logger.debug("Emotion: ${assistantMessage.emotion}")
+
                 PromptInformation.lastAgentMessage = getCurrentTime()
                 invokeSummaryAgent()
             }
