@@ -3,11 +3,14 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.model.completionRequest.*
 import com.github.sieff.mapairtool.model.message.MessageOrigin
 import com.github.sieff.mapairtool.model.message.MessageSerializer
+import com.github.sieff.mapairtool.model.sourceCode.SourceCodeInfo
+import com.github.sieff.mapairtool.model.sourceCode.SourceCodeInfoList
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.sourceCode.SourceCodeService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class PromptBuilder(project: Project, val model: String) {
     private val chatMessageService = project.service<ChatMessageService>()
@@ -17,7 +20,9 @@ class PromptBuilder(project: Project, val model: String) {
     private lateinit var responseFormat: ResponseFormat
 
     fun build(): CompletionRequest {
-        return CompletionRequest(model, requestMessages, responseFormat)
+        return CompletionRequest(model, requestMessages
+        // TODO: Correct response Format, responseFormat
+        )
     }
 
     fun addAgentResponseFormat(): PromptBuilder {
@@ -71,6 +76,7 @@ class PromptBuilder(project: Project, val model: String) {
     fun addAgentRole(): PromptBuilder {
         val message = RequestMessage("""
             You are a pair programming assistant that behaves like a human pair programming partner.
+            Your name is Quno. Always introduce yourself with that name in your first message.
             You don't know the implemented solution, but you can help the user with your knowledge.
             You are the agent or assistant.
             Since you are a conversational agent, you should be able to have multi turn conversations.
@@ -252,40 +258,40 @@ class PromptBuilder(project: Project, val model: String) {
     fun addSourceCode(): PromptBuilder {
         val activeFile = sourceCodeService.getActiveFile()
         if (activeFile != null) {
-            var message = "The following code is always the up to date code. Use it as a permanent updating fact.\n"
-            message += "Currently active code file:\n"
-            message += activeFile
-            message += "\n\n"
+            var message = "The following is information about source code from different origins. " +
+                    "This information is always up to date and overwrites any information from the conversation history." +
+                    "'origin' denotes what type of code file it is. " +
+                    "'code_file' or 'code_files' is the object or list of objects that contains information about the code files. " +
+                    "'name' is the name of the file. " +
+                    "'code' is the actual source code. This is divided into a List of source code objects for each line." +
+                    "Each line of code has a 'line_number' and 'code_line' as the source code." +
+                    "'cursor_line' is the 1-indexed line of the caret (aka cursor) position in the active file." +
+                    "\n\n"
 
-            message += renderSourceCodeList(sourceCodeService.getActiveFileReferences(),
-                "Project files that are referenced in the active code file:")
+            message += Json.encodeToString(
+                SourceCodeInfo(
+                "Currently active code file",
+                activeFile,
+                PromptInformation.caretLine)
+            )
+            message += "\n"
 
-            message += renderSourceCodeList(sourceCodeService.getOpenFiles(),
-                "Project files that are currently opened in the editor:")
+            message += Json.encodeToString(
+                SourceCodeInfoList(
+                "Project files that are referenced in the active code file",
+                sourceCodeService.getActiveFileReferences())
+            )
+            message += "\n"
+
+            message += Json.encodeToString(
+                SourceCodeInfoList("Project files that are currently opened in the editor",
+                sourceCodeService.getOpenFiles())
+            )
 
             val requestMessage = RequestMessage(message, "system")
             addMessage(requestMessage)
         }
         return this
-    }
-
-    private fun renderSourceCodeList(files: List<String>, heading: String): String {
-        var result = ""
-
-        if (files.isNotEmpty()) {
-            result += "$heading\n[\n\n"
-
-            files.forEachIndexed { index, openedFile ->
-                if (index != 0) {
-                    result += "\n\n,\n\n"
-                }
-                result += openedFile
-            }
-
-            result += "\n\n]\n\n"
-        }
-
-        return result
     }
 
     fun addKeyInformation(): PromptBuilder {

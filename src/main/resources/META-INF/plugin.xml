@@ -10,12 +10,12 @@
     <resource-bundle>messages.Bundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Pair Tool" anchor="right" icon="/img/pluginIcon.svg"/>
+        <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Quno" anchor="right" icon="/img/learn.svg"/>
         <applicationConfigurable
                 parentId="tools"
                 instance="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
-                displayName="Pair Tool"/>
+                displayName="Quno"/>
 
         <postStartupActivity implementation="com.github.sieff.mapairtool.services.logWriter.LogWriterStartupActivity"/>
         <postStartupActivity implementation="com.github.sieff.mapairtool.services.cefBrowser.SetLocaleStartupActivity"/>
@@ -47,6 +47,8 @@
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
         <listener class="com.github.sieff.mapairtool.listeners.ThemeChangeListener"
                   topic="com.intellij.openapi.editor.colors.EditorColorsListener"/>
+        <listener class="com.github.sieff.mapairtool.listeners.CaretListener"
+                  topic="com.intellij.openapi.editor.event.CaretListener"/>
     </projectListeners>
     <actions>
         <action id="com.github.sieff.mapairtool.ui.popup.PopupAction"

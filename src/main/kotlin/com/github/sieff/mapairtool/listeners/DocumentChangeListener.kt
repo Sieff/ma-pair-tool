@@ -18,6 +18,10 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
         PromptInformation.lastUserEdit = getCurrentTime()
     }
 
+    private val caretListener = CaretListener { event ->
+        PromptInformation.caretLine = event.newPosition.line + 1
+    }
+
     private val registeredDocuments = mutableSetOf<Document>()
 
     init {
@@ -32,6 +36,7 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
         editors.forEach { editor ->
             if (editor.document !in registeredDocuments) {
                 editor.document.addDocumentListener(documentListener)
+                editor.caretModel.addCaretListener(caretListener)
                 registeredDocuments.add(editor.document)
             }
         }
@@ -42,6 +47,7 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
         editors.forEach { editor ->
             if (editor.document in registeredDocuments) {
                 editor.document.removeDocumentListener(documentListener)
+                editor.caretModel.removeCaretListener(caretListener)
                 registeredDocuments.remove(editor.document)
             }
         }
@@ -57,6 +63,7 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
             val document = event.editor.document
             if (document !in registeredDocuments) {
                 document.addDocumentListener(documentListener)
+                event.editor.caretModel.addCaretListener(caretListener)
                 registeredDocuments.add(document)
             }
         }
@@ -65,6 +72,7 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
             val document = event.editor.document
             if (document in registeredDocuments) {
                 document.removeDocumentListener(documentListener)
+                event.editor.caretModel.removeCaretListener(caretListener)
                 registeredDocuments.remove(document)
             }
         }

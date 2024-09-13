@@ -1,5 +1,7 @@
 package com.github.sieff.mapairtool.services.sourceCode
 
+import com.github.sieff.mapairtool.model.sourceCode.SourceCodeFile
+import com.github.sieff.mapairtool.model.sourceCode.SourceCodeLine
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
@@ -13,20 +15,26 @@ import com.intellij.psi.PsiRecursiveElementVisitor
 
 
 class SourceCodeServiceImpl(val project: Project): SourceCodeService {
-    override fun getActiveFile(): String? {
+    override fun getActiveFile(): SourceCodeFile? {
         val activeFile = getActiveVirtualFile()
         if (activeFile != null) {
-            return renderNameAndText(activeFile.name, activeFile.readText())
+            return SourceCodeFile(
+                activeFile.name,
+                activeFile.readText().split("\n").mapIndexed {index: Int, codeLine: String -> SourceCodeLine(index + 1, codeLine) }
+            )
         }
         return null
     }
 
-    override fun getActiveFileReferences(): List<String> {
-        val contents: MutableList<String> = ArrayList()
+    override fun getActiveFileReferences(): List<SourceCodeFile> {
+        val contents: MutableList<SourceCodeFile> = ArrayList()
 
         for (referencedPsiFile in getActivePsiFileReferences()) {
-            val content = ReadAction.compute<String, Throwable> {
-                renderNameAndText(referencedPsiFile.name, referencedPsiFile.text)
+            val content = ReadAction.compute<SourceCodeFile, Throwable> {
+                SourceCodeFile(
+                    referencedPsiFile.name,
+                    referencedPsiFile.text.split("\n").mapIndexed {index: Int, codeLine: String -> SourceCodeLine(index + 1, codeLine) }
+                )
             }
             contents.add(content)
         }
@@ -34,14 +42,14 @@ class SourceCodeServiceImpl(val project: Project): SourceCodeService {
         return contents.toSet().toList()
     }
 
-    override fun getOpenFiles(): List<String> {
+    override fun getOpenFiles(): List<SourceCodeFile> {
         return getOpenVirtualFiles()
-            .map { renderNameAndText(it.name, it.readText()) }
+            .map { SourceCodeFile(
+                it.name,
+                it.readText().split("\n").mapIndexed {index: Int, codeLine: String -> SourceCodeLine(index + 1, codeLine) }
+            )
+            }
             .toSet().toList()
-    }
-
-    private fun renderNameAndText(name: String, body: String): String {
-        return "// Filename: $name\n$body"
     }
 
     private fun isFileInProject(psiFile: PsiFile): Boolean {

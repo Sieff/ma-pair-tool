@@ -1,7 +1,9 @@
 package com.github.sieff.mapairtool.services.sourceCode
 
+import com.github.sieff.mapairtool.model.sourceCode.SourceCodeFile
+
 interface SourceCodeService {
-    fun getActiveFile(): String?
-    fun getActiveFileReferences(): List<String>
-    fun getOpenFiles(): List<String>
+    fun getActiveFile(): SourceCodeFile?
+    fun getActiveFileReferences(): List<SourceCodeFile>
+    fun getOpenFiles(): List<SourceCodeFile>
 }

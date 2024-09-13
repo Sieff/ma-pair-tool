@@ -12,6 +12,8 @@ object PromptInformation {
     var summary: String = ""
     var boundaries: List<String> = ArrayList()
 
+    var caretLine: Int = 0
+
     fun timeSinceLastUserEdit(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserEdit)
     }
