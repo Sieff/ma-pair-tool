@@ -1,5 +1,6 @@
 package com.github.sieff.mapairtool.settings
 
+import com.github.sieff.mapairtool.util.observerPattern.publisher.APublisher
 import com.github.sieff.mapairtool.util.singletonPattern.Singleton
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
@@ -10,7 +11,13 @@ import com.intellij.openapi.components.Storage
 @Service
 class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
 
-    data class State(var apiKey: String = "")
+    data class State(var apiKey: String = ""): APublisher<State>() {
+        var studyGroup: Int = 0
+            set(value) {
+                field = value
+                publish(this)
+            }
+    }
 
     private var state = State()
 

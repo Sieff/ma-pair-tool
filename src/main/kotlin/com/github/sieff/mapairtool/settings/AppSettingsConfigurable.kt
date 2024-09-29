@@ -15,8 +15,8 @@ class AppSettingsConfigurable : Configurable {
     private val settings: AppSettingsState
         get() = AppSettingsState.getInstance()
 
-    override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String? {
-        return "Pair Tool Settings"
+    override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String {
+        return "CPS Agent Settings"
     }
 
     override fun getPreferredFocusedComponent(): JComponent {
@@ -32,7 +32,7 @@ class AppSettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val state: AppSettingsState.State =
             Objects.requireNonNull(settings.state)
-        return !settingsComponent.apiKeyText.equals(state.apiKey)
+        return settingsComponent.apiKeyText != state.apiKey || settingsComponent.studyGroup != state.studyGroup
     }
 
 
@@ -40,12 +40,13 @@ class AppSettingsConfigurable : Configurable {
         val state: AppSettingsState.State =
             Objects.requireNonNull(settings.state)
         state.apiKey = settingsComponent.apiKeyText
+        state.studyGroup = settingsComponent.studyGroup
     }
 
     override fun reset() {
         val state: AppSettingsState.State =
             Objects.requireNonNull(settings.state)
         settingsComponent.apiKeyText = state.apiKey
+        settingsComponent.studyGroup = state.studyGroup
     }
-
 }

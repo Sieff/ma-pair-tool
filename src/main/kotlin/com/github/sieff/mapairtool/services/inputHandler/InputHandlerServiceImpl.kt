@@ -2,7 +2,7 @@ package com.github.sieff.mapairtool.services.inputHandler
 
 import com.github.sieff.mapairtool.model.message.Message
 import com.github.sieff.mapairtool.util.Logger
-import com.github.sieff.mapairtool.services.agent.AgentService
+import com.github.sieff.mapairtool.services.agent.AgentServiceContext
 import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.intellij.openapi.components.service
@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.remoteDev.tracing.getCurrentTime
 
 class InputHandlerServiceImpl(project: Project): InputHandlerService {
-    private val agentService = project.service<AgentService>()
+    private val agentServiceContext = project.service<AgentServiceContext>()
     private val chatMessageService = project.service<ChatMessageService>()
 
     private val logger = Logger(this.javaClass)
@@ -20,7 +20,7 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
         chatMessageService.addMessage(input)
         PromptInformation.lastUserInteraction = getCurrentTime()
 
-        agentService.invokeMainAgent()
+        agentServiceContext.invokeAgent()
     }
 
     override fun handleWidgetInput(input: Message) {
@@ -28,6 +28,6 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
         chatMessageService.addMessage(input)
         PromptInformation.lastUserInteraction = getCurrentTime()
 
-        agentService.invokeMainAgent()
+        agentServiceContext.invokeAgent()
     }
 }

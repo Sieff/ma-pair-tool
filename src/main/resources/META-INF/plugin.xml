@@ -10,19 +10,19 @@
     <resource-bundle>messages.Bundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Quno" anchor="right" icon="/img/learn.svg"/>
+        <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Assistant" anchor="right" icon="/img/learn.svg"/>
         <applicationConfigurable
                 parentId="tools"
                 instance="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
-                displayName="Quno"/>
+                displayName="CPS Agent"/>
 
         <postStartupActivity implementation="com.github.sieff.mapairtool.services.logWriter.LogWriterStartupActivity"/>
         <postStartupActivity implementation="com.github.sieff.mapairtool.services.cefBrowser.SetLocaleStartupActivity"/>
 
         <projectService
-                serviceInterface="com.github.sieff.mapairtool.services.agent.AgentService"
-                serviceImplementation="com.github.sieff.mapairtool.services.agent.AgentServiceImpl"/>
+                serviceInterface="com.github.sieff.mapairtool.services.agent.AgentServiceContext"
+                serviceImplementation="com.github.sieff.mapairtool.services.agent.AgentServiceContextImpl"/>
         <projectService
                 serviceInterface="com.github.sieff.mapairtool.services.agent.PromptService"
                 serviceImplementation="com.github.sieff.mapairtool.services.agent.PromptServiceImpl"/>
