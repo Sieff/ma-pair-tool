@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.ui.popup
 
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
+import com.github.sieff.mapairtool.ui.Frontend
 import com.github.sieff.mapairtool.util.CefQueryHandler
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
@@ -29,7 +30,7 @@ class PopupComponent(project: Project, preferredSize: Dimension): Disposable, JB
         layout = BorderLayout()
 
         browser = JBCefBrowser()
-        browser.loadURL("localhost:3000/widget")
+        browser.loadURL("${Frontend.url}/widget")
         val cefClient = browser.jbCefClient.cefClient
 
         logger.info("Creating Widget Browser")

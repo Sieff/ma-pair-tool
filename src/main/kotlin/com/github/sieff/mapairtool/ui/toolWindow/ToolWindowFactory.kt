@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.ui.toolWindow
 
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
+import com.github.sieff.mapairtool.ui.Frontend
 import com.github.sieff.mapairtool.util.CefQueryHandler
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -34,7 +35,7 @@ class ToolWindowFactory : ToolWindowFactory {
         fun getContent() = JBPanel<JBPanel<*>>().apply {
             layout = BorderLayout()
             browser = JBCefBrowser()
-            browser.loadURL("localhost:3000/chat")
+            browser.loadURL("${Frontend.url}/chat")
             val cefClient = browser.jbCefClient.cefClient
 
             logger.info("Creating Toolwindow")
