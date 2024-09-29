@@ -34,7 +34,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
     override fun invokeMainAgent() {
         logger.info("Using CPS agent")
         CompletableFuture.supplyAsync {
-            getAiCompletion(promptService.getMainAgentPrompt(model))
+            getAiCompletion(promptService.getCPSAgentPrompt(model))
         }.thenAccept { result: ChatCompletion ->
             SwingUtilities.invokeLater {
                 PopupInvoker.invokePopup(project)

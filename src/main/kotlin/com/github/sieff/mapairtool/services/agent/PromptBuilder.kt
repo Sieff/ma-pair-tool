@@ -228,6 +228,18 @@ class PromptBuilder(project: Project, val model: String) {
         return this
     }
 
+    fun addBasicConversationHistory(): PromptBuilder {
+        val requestMessages = chatMessageService.getMessages().map {
+            val role: String = if (it.origin == MessageOrigin.AGENT) "assistant" else "user"
+            RequestMessage(it.message, role)
+        }
+
+        for (request in requestMessages) {
+            addMessage(request)
+        }
+        return this
+    }
+
     /**
      * Gets a part of the conversation history at the end of the conversation
      *

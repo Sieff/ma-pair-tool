@@ -116,13 +116,11 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
     private fun createLogMessage(message: BaseMessage): String {
         var logEntry = ""
 
-        if (message.origin === MessageOrigin.AGENT) {
-            val m = message as AssistantMessage
-            logEntry += MessageSerializer.json.encodeToString<AssistantMessage>(m)
+        if (message is AssistantMessage) {
+            logEntry += MessageSerializer.json.encodeToString<AssistantMessage>(message)
         }
-        if (message.origin === MessageOrigin.USER) {
-            val m = message as Message
-            logEntry += MessageSerializer.json.encodeToString<Message>(m)
+        if (message is Message) {
+            logEntry += MessageSerializer.json.encodeToString<Message>(message)
         }
 
         logEntry += "\n"

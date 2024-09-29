@@ -4,7 +4,8 @@ import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.intellij.openapi.Disposable
 
 interface PromptService: Disposable {
-    fun getMainAgentPrompt(model: String): CompletionRequest
+    fun getCPSAgentPrompt(model: String): CompletionRequest
+    fun getBaselineAgentPrompt(model: String): CompletionRequest
     fun getSummaryAgentPrompt(model: String): CompletionRequest
     fun getProactiveAgentPrompt(model: String): CompletionRequest
 }

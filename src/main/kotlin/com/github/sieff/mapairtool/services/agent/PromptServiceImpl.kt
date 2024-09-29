@@ -4,7 +4,7 @@ import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
 import com.intellij.openapi.project.Project
 
 class PromptServiceImpl(val project: Project): PromptService {
-    override fun getMainAgentPrompt(model: String): CompletionRequest {
+    override fun getCPSAgentPrompt(model: String): CompletionRequest {
         return PromptBuilder(project, model)
             .addAgentResponseFormat()
             .addAgentRole()
@@ -15,6 +15,12 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addSourceCode()
             .addConversationHistory(1, true)
             .addMainAgentTask()
+            .build()
+    }
+
+    override fun getBaselineAgentPrompt(model: String): CompletionRequest {
+        return PromptBuilder(project, model)
+            .addBasicConversationHistory()
             .build()
     }
 
