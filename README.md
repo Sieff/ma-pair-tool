@@ -16,10 +16,6 @@
 - [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
-<!-- Plugin description -->
-This Plugin is used to conduct a study with an LLM-based agent.
-<!-- Plugin description end -->
-
 ## Installation
 
 - Using the IDE built-in plugin system:
