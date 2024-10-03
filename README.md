@@ -16,6 +16,23 @@
 - [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
+<!-- Plugin description -->
+A plugin for a conversational agent within the IDE.
+
+Its purpose is to be used in a study for programming tasks with an LLM-based agent.
+The plugin uses the OpenAI API as a backend for the agent to generate messages.
+
+<h3>Usage</h3>
+<ol type="1">
+    <li>Install the plugin</li>
+    <li>Go to your IDE settings. Tools > CPS Agent</li>
+    <li>Enter your OpenAI API key in order for the agent to make requests</li>
+    <li>Choose a study group, value 1 or 2 will result in a different kind of agent being used</li>
+    <li>Open the tool window "Assistant" on the right hand toolbar</li>
+    <li>Start using your new assistant</li>
+</ol>
+<!-- Plugin description end -->
+
 ## Installation
 
 - Using the IDE built-in plugin system:
