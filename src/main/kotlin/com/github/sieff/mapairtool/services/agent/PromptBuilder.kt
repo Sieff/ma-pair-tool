@@ -201,6 +201,10 @@ class PromptBuilder(project: Project, val model: String) {
             They should be distinct messages. Fewer is better.
             'proactive' will always be the boolean true.
             Make sure that all JSON is properly formatted.
+            
+            ${addUserMetrics()}
+            
+            ${addUserBoundaries()}
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -315,23 +319,19 @@ class PromptBuilder(project: Project, val model: String) {
         return this
     }
 
-    fun addUserMetrics(): PromptBuilder {
-        val message = RequestMessage("""
+    fun addUserMetrics(): String {
+        return """
             Relevant user metrics:
             Time (seconds) since the last user communication with the agent: ${PromptInformation.timeSinceLastUserInteraction()};
             Time (seconds) since the last user edit in the code editor: ${PromptInformation.timeSinceLastUserEdit()};
             Time (seconds) since the agent (you) last communicated with the user: ${PromptInformation.timeSinceLastAgentMessage()};
-        """.trimIndent(), "system")
-        addMessage(message)
-        return this
+        """.trimIndent()
     }
 
-    fun addUserBoundaries(): PromptBuilder {
-        val message = RequestMessage("""
+    fun addUserBoundaries(): String {
+        return """
             Here are relevant boundaries, that the user communicated:
             ${PromptInformation.boundaries}
-        """.trimIndent(), "system")
-        addMessage(message)
-        return this
+        """.trimIndent()
     }
 }

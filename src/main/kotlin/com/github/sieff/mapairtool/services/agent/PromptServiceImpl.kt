@@ -41,8 +41,6 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addAgentResponseFormat()
             .addAgentRole()
             .addProactiveAgentTask()
-            .addUserBoundaries()
-            .addUserMetrics()
             .addSummary()
             .addConversationHistory(1, false)
             .addSourceCode()
