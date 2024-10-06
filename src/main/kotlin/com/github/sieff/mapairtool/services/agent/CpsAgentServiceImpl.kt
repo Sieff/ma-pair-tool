@@ -122,13 +122,13 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
     }
 
     private fun getErrorMessage(message: String): AssistantMessage {
-        return AssistantMessage(MessageOrigin.AGENT, message, Emotion.SAD, ArrayList(), false, 1, "")
+        return AssistantMessage(MessageOrigin.AGENT, Phase.CLARIFY, message, Emotion.SAD, ArrayList(), false, 1, "")
     }
 
     private fun getAssistantMessage(content: String): AssistantMessage {
         try {
             val rawMessage = MessageSerializer.json.decodeFromString<AssistantMessage>(content)
-            return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, false, 5, "")
+            return AssistantMessage(MessageOrigin.AGENT, rawMessage.phase, rawMessage.message, rawMessage.emotion, rawMessage.reactions, false, 5, "")
         } catch (e: Exception) {
             e.message?.let { logger.error(it) }
             return getErrorMessage(Bundle.message("errors.parsingError"))
@@ -140,7 +140,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
             val rawMessage = MessageSerializer.json.decodeFromString<AssistantMessage>(content)
             logger.debug("Necessity value: ${rawMessage.necessity}")
             logger.debug("CoT: ${rawMessage.thought}")
-            return AssistantMessage(MessageOrigin.AGENT, rawMessage.message, rawMessage.emotion, rawMessage.reactions, true, rawMessage.necessity, rawMessage.thought)
+            return AssistantMessage(MessageOrigin.AGENT, rawMessage.phase, rawMessage.message, rawMessage.emotion, rawMessage.reactions, true, rawMessage.necessity, rawMessage.thought)
         } catch (e: Exception) {
             e.message?.let { logger.error(it) }
             return getErrorMessage(Bundle.message("errors.parsingError"))
