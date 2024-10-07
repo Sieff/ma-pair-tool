@@ -13,8 +13,12 @@ class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublish
     private var widgetMessage: AssistantMessage? = null
 
     override fun addMessage(message: BaseMessage) {
-        if (message is AssistantMessage) {
-            widgetMessage = message
+        if (message.origin == MessageOrigin.AGENT) {
+            if (message is AssistantMessage) {
+                widgetMessage = message
+            } else {
+                widgetMessage = null
+            }
         }
 
         logWriterService.logMessage(message)

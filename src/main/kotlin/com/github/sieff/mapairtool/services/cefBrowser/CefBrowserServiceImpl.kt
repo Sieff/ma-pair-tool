@@ -60,6 +60,11 @@ class CefBrowserServiceImpl(
         sendPacketToBrowser(toolWindowBrowser, packet)
     }
 
+    override fun updateProcessingStatus(processing: Boolean) {
+        val packet = UpdateProcessingStatusPacket(processing, DataPacketType.UPDATE_PROCESSING_STATUS)
+        sendPacketToBrowser(toolWindowBrowser, packet)
+    }
+
     override fun updateBundle(bundle: String) {
         val packet = UpdateBundlePacket(bundle, DataPacketType.UPDATE_BUNDLE)
         sendPacketToBrowser(toolWindowBrowser, packet)

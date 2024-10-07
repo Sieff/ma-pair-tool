@@ -13,6 +13,7 @@ object DataPacketSerializer {
             subclass(UpdateLogStatusPacket::class, UpdateLogStatusPacket.serializer())
             subclass(UpdateBundlePacket::class, UpdateBundlePacket.serializer())
             subclass(UpdateColorSchemePacket::class, UpdateColorSchemePacket.serializer())
+            subclass(UpdateProcessingStatusPacket::class, UpdateProcessingStatusPacket.serializer())
         }
     }
 

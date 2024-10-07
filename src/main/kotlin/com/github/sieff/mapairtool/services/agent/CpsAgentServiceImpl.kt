@@ -3,6 +3,7 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.*
 import com.github.sieff.mapairtool.model.message.*
+import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
@@ -22,6 +23,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
     private val logWriterService = project.service<LogWriterService>()
+    private val cefBrowserService = project.service<CefBrowserService>()
 
     private val logger = Logger(this.javaClass)
 
@@ -33,10 +35,12 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
 
     override fun invokeMainAgent() {
         logger.info("Using CPS agent")
+        cefBrowserService.updateProcessingStatus(true)
         CompletableFuture.supplyAsync {
             getAiCompletion(promptService.getCPSAgentPrompt(model))
         }.thenAccept { result: ChatCompletion ->
             SwingUtilities.invokeLater {
+                cefBrowserService.updateProcessingStatus(false)
                 PopupInvoker.invokePopup(project)
                 val message = result.choices[0].message.content
                 val assistantMessage = getAssistantMessage(message)
@@ -80,6 +84,11 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
     private fun startProactiveAgent() {
         thread {
             while (true) {
+                if (AppSettingsState.getInstance().state.studyGroup != 2) {
+                    logger.warn("Cps Agent not selected, shutting down proactive agent")
+                    break
+                }
+
                 Thread.sleep(proactiveInvocationInterval)
                 if (AppSettingsState.getInstance().state.apiKey == "") {
                     logger.warn("ApiKey not set, can't invoke proactive agent.")
