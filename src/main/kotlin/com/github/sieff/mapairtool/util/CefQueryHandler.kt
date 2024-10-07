@@ -72,7 +72,6 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
 
     private fun onResetConversation() {
         logWriterService.logReset()
-        logWriterService.startNewLog()
         chatMessageService.resetMessages()
     }
 

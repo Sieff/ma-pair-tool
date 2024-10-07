@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.listeners
 
 import com.github.sieff.mapairtool.services.agent.PromptInformation
 import com.github.sieff.mapairtool.services.agent.PromptService
+import com.github.sieff.mapairtool.services.logWriter.LogWriterService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
@@ -13,9 +14,11 @@ import com.intellij.remoteDev.tracing.getCurrentTime
 
 class DocumentChangeListener(project: Project) : ProjectManagerListener {
     private val promptService = project.service<PromptService>()
+    private val logWriterService = project.service<LogWriterService>()
 
     private val documentListener = DocumentListener { _ ->
         PromptInformation.lastUserEdit = getCurrentTime()
+        logWriterService.logEdit()
     }
 
     private val caretListener = CaretListener { event ->
