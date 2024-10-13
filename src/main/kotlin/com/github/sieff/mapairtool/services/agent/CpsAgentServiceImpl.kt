@@ -69,7 +69,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
             val summaryMessage = getSummaryMessage(result.choices[0].message.content)
             if (summaryMessage != null) {
                 PromptInformation.summary = summaryMessage.summary
-                PromptInformation.keyInformation = summaryMessage.keyInformation
+                PromptInformation.keyInformation = summaryMessage.subProblems
                 PromptInformation.boundaries = summaryMessage.boundaries
 
                 logger.debug("Summary: ${PromptInformation.summary}")
