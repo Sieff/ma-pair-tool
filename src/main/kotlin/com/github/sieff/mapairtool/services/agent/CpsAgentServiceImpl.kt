@@ -112,14 +112,37 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
                         PopupInvoker.invokePopup(project)
                         val message = result.choices[0].message.content
                         val proactiveMessage = getProactiveMessage(message)
-                        if (proactiveMessage.necessity > 3) {
-                            chatMessageService.addMessage(proactiveMessage)
-                            PromptInformation.lastAgentMessage = getCurrentTime()
-                        }
+                        handleProactiveMessage(proactiveMessage)
                     }
                 }
             }
         }
+    }
+
+    private fun handleProactiveMessage(message: AssistantMessage) {
+        if (message.necessity <= 3) {
+            logger.info("Necessity of proactive message is too low.")
+            return
+        }
+
+        val lastMessage = chatMessageService.getLastAgentMessage()
+
+        CompletableFuture.supplyAsync {
+            getAiCompletion(promptService.getSimilarityPrompt(model, message, lastMessage))
+        }.thenAccept { result: ChatCompletion ->
+            SwingUtilities.invokeLater {
+                val content = result.choices[0].message.content
+                val similarity = getMessageSimilarity(content)
+
+                if (similarity.similarity <= 0.5f) {
+                    chatMessageService.addMessage(message)
+                    PromptInformation.lastAgentMessage = getCurrentTime()
+                } else {
+                    logger.info("Proactive message too similar to last message.")
+                }
+            }
+        }
+
     }
 
     override fun getErrorResponse(message: String): ChatCompletion {
@@ -153,6 +176,17 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
         } catch (e: Exception) {
             e.message?.let { logger.error(it) }
             return getErrorMessage(Bundle.message("errors.parsingError"))
+        }
+    }
+
+    private fun getMessageSimilarity(content: String): MessageSimilarity {
+        try {
+            val messageSimilarity = Json.decodeFromString<MessageSimilarity>(content)
+            logger.debug("Message similarity: ${messageSimilarity.similarity}")
+            return messageSimilarity
+        } catch (e: Exception) {
+            e.message?.let { logger.error(it) }
+            return MessageSimilarity(0.0f)
         }
     }
 

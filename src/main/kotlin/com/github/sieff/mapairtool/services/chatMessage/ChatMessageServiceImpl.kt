@@ -39,4 +39,14 @@ class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublish
         widgetMessage = null
         publish(ChatMessageState(messages, widgetMessage))
     }
+
+    override fun getLastAgentMessage(): BaseMessage {
+        var lastMessage: BaseMessage = Message(MessageOrigin.AGENT, "")
+        for (message in messages) {
+            if (message.origin == MessageOrigin.AGENT) {
+                lastMessage = message
+            }
+        }
+        return lastMessage
+    }
 }

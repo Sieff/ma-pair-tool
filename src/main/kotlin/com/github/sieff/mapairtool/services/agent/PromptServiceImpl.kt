@@ -1,6 +1,7 @@
 package com.github.sieff.mapairtool.services.agent
 
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
+import com.github.sieff.mapairtool.model.message.BaseMessage
 import com.intellij.openapi.project.Project
 
 class PromptServiceImpl(val project: Project): PromptService {
@@ -46,6 +47,16 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addSourceCode()
             .addConversationHistory(1, true)
             .addProactiveAgentTask()
+            .build()
+    }
+
+    override fun getSimilarityPrompt(
+        model: String,
+        firstMessage: BaseMessage,
+        secondMessage: BaseMessage
+    ): CompletionRequest {
+        return PromptBuilder(project, model)
+            .addSimilarityTask(firstMessage.message, secondMessage.message)
             .build()
     }
 

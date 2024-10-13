@@ -335,4 +335,27 @@ class PromptBuilder(project: Project, val model: String) {
             ${PromptInformation.boundaries}
         """.trimIndent()
     }
+
+    fun addSimilarityTask(firstMessage: String, secondMessage: String): PromptBuilder {
+        val message = RequestMessage("""
+            You are a similarity checker for two messages.
+            Rate similarity based on content and structure of the message.
+            You can only respond in a JSON formatted string. Do not return any value that isn't properly formatted JSON.
+            Return a JSON object with the following format: {similarity: number}.
+            Where similarity is a floating point value between 0 and 1, with 2 digits of precision.
+            Similarity will be the similarity for the following two messages (the two messages are delimited by "------------------------------------------------" and a label of "First message:" or "Second message:" respectively):
+   
+            First message: 
+            $firstMessage
+            
+            ------------------------------------------------
+            
+            Second message: 
+            $secondMessage
+        """.trimIndent(), "system")
+
+        addMessage(message)
+
+        return this
+    }
 }
