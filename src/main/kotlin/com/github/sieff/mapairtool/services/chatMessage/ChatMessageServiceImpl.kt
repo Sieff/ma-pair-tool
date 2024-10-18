@@ -49,4 +49,16 @@ class ChatMessageServiceImpl(val project: Project): ChatMessageService, APublish
         }
         return lastMessage
     }
+
+    override fun countUnansweredMessages(): Long {
+        var count: Long = 0
+        for (message in messages) {
+            if (message is AssistantMessage && message.proactive) {
+                count++
+            } else {
+                count = 0
+            }
+        }
+        return count
+    }
 }

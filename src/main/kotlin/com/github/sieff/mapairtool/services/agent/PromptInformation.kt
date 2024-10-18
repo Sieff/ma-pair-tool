@@ -8,25 +8,27 @@ object PromptInformation {
     var lastUserEdit: Long = getCurrentTime()
     var lastUserInteraction: Long = getCurrentTime()
     var lastAgentMessage: Long = getCurrentTime()
-    var keyInformation: List<String> = ArrayList()
+    var facts: List<String> = ArrayList()
+    var goals: List<String> = ArrayList()
+    var challenges: List<String> = ArrayList()
     var summary: String = ""
     var boundaries: List<String> = ArrayList()
 
     var caretLine: Int = 0
 
     fun timeSinceLastUserEdit(): Long {
-        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserEdit)
+        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastUserEdit)
     }
 
     fun timeSinceLastUserInteraction(): Long {
-        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserInteraction)
+        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastUserInteraction)
     }
 
     fun timeSinceLastAgentMessage(): Long {
-        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastAgentMessage)
+        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastAgentMessage)
     }
 
     fun timeSinceLastChatInputEdit(): Long {
-        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastChatInputEdit)
+        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastChatInputEdit)
     }
 }

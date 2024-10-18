@@ -16,5 +16,6 @@ enum class Emotion {
     @SerialName("SAD") SAD,
     @SerialName("FEARFUL") FEARFUL,
     @SerialName("ANTICIPATING") ANTICIPATING,
-    @SerialName("DISGUST") DISGUST
+    @SerialName("DISGUST") DISGUST,
+    @SerialName("JOY") JOY
 }

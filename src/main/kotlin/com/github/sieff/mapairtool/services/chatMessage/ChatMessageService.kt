@@ -10,4 +10,5 @@ interface ChatMessageService: Publisher<ChatMessageState> {
     fun getState(): ChatMessageState
     fun resetMessages()
     fun getLastAgentMessage(): BaseMessage
+    fun countUnansweredMessages(): Long
 }
