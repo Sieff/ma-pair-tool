@@ -8,7 +8,6 @@ import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
 import com.github.sieff.mapairtool.settings.AppSettingsState
-import com.github.sieff.mapairtool.ui.popup.PopupInvoker
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.remoteDev.tracing.getCurrentTime
@@ -41,7 +40,9 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
         }.thenAccept { result: ChatCompletion ->
             SwingUtilities.invokeLater {
                 cefBrowserService.updateProcessingStatus(false)
-                PopupInvoker.invokePopup(project)
+
+                // PopupInvoker.invokePopup(project)
+
                 val message = result.choices[0].message.content
                 val assistantMessage = getAssistantMessage(message)
                 chatMessageService.addMessage(assistantMessage)
@@ -102,7 +103,8 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
                     getAiCompletion(promptService.getProactiveAgentPrompt(model))
                 }.thenAccept { result: ChatCompletion ->
                     SwingUtilities.invokeLater {
-                        PopupInvoker.invokePopup(project)
+                        // PopupInvoker.invokePopup(project)
+
                         val message = result.choices[0].message.content
                         val proactiveMessage = getProactiveMessage(message)
                         handleProactiveMessage(proactiveMessage)
