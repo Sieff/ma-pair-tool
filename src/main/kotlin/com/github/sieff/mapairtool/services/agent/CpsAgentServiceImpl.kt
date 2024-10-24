@@ -27,7 +27,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
 
     private val logger = Logger(this.javaClass)
 
-    private val proactiveInvocationInterval = 60_000L
+    private val proactiveInvocationInterval = 5_000L // 5 seconds
 
     init {
         startProactiveAgent()
@@ -94,18 +94,7 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
                 }
 
                 Thread.sleep(proactiveInvocationInterval)
-                if (AppSettingsState.getInstance().state.apiKey == "") {
-                    logger.warn("ApiKey not set, can't invoke proactive agent.")
-                    continue
-                }
-
-                if (PromptInformation.timeSinceLastChatInputEdit() < 10) {
-                    logger.info("User is typing.")
-                    continue
-                }
-
-                if (PromptInformation.timeSinceLastAgentMessage() < 60) {
-                    logger.info("Communicated recently, not invoking proactive message. (${PromptInformation.timeSinceLastAgentMessage()} seconds ago)")
+                if (!checkProactiveInvocationTiming()) {
                     continue
                 }
 
@@ -121,6 +110,30 @@ class CpsAgentServiceImpl(val project: Project): AgentService() {
                 }
             }
         }
+    }
+
+    private fun checkProactiveInvocationTiming(): Boolean {
+        if (AppSettingsState.getInstance().state.apiKey == "") {
+            logger.warn("ApiKey not set, can't invoke proactive agent.")
+            return false
+        }
+
+        if (PromptInformation.timeSinceLastChatInputEdit() < 5) {
+            logger.info("User is typing in the chat.")
+            return false
+        }
+
+        if (PromptInformation.timeSinceLastUserEdit() < 5) {
+            logger.info("User is typing in the editor.")
+            return false
+        }
+
+        if (PromptInformation.timeSinceLastAgentMessage() < 60) {
+            logger.info("Communicated recently, not invoking proactive message. (${PromptInformation.timeSinceLastAgentMessage()} seconds ago)")
+            return false
+        }
+
+        return true
     }
 
     private fun handleProactiveMessage(message: AssistantMessage) {

@@ -16,9 +16,16 @@ class DocumentChangeListener(project: Project) : ProjectManagerListener {
     private val promptService = project.service<PromptService>()
     private val logWriterService = project.service<LogWriterService>()
 
-    private val documentListener = DocumentListener { _ ->
+    private val documentListener = DocumentListener { edit ->
         PromptInformation.lastUserEdit = getCurrentTime()
-        logWriterService.logEdit()
+
+        if (edit.oldFragment.isEmpty() && edit.newFragment.isNotEmpty()) {
+            logWriterService.logEdit("add")
+        } else if (edit.oldFragment.isNotEmpty() && edit.newFragment.isEmpty()) {
+            logWriterService.logEdit("remove")
+        } else if (edit.oldFragment.isNotEmpty() && edit.newFragment.isNotEmpty()) {
+            logWriterService.logEdit("replace")
+        }
     }
 
     private val caretListener = CaretListener { event ->

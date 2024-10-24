@@ -8,5 +8,5 @@ interface LogWriterService {
     fun logMessage(message: BaseMessage)
     fun logSummary(summary: SummaryMessage)
     fun logReset()
-    fun logEdit()
+    fun logEdit(type: String)
 }

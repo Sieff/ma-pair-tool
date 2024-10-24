@@ -92,13 +92,13 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
     }
 
-    override fun logEdit() {
+    override fun logEdit(type: String) {
         if (!editLogIsReady()) {
             startNewLog()
         }
         if (editLogIsReady()) {
             FileOutputStream(editLog!!, true).bufferedWriter().use { out ->
-                out.write("${getCurrentTime()}\n")
+                out.write("${getCurrentTime()} - $type\n")
             }
         }
     }
@@ -132,9 +132,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
     }
 
     private fun createConversationLogFile(logDirPath: Path): File {
-        val timestamp = System.currentTimeMillis()
-
-        val logFilePath = logDirPath.resolve("conversation-log-$timestamp.log").toString()
+        val logFilePath = logDirPath.resolve("conversation-log.log").toString()
         val logFile = File(logFilePath)
 
         if (!logFile.exists()) {
@@ -150,9 +148,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
     }
 
     private fun createEditLogFile(logDirPath: Path): File {
-        val timestamp = System.currentTimeMillis()
-
-        val logFilePath = logDirPath.resolve("edit-log-$timestamp.log").toString()
+        val logFilePath = logDirPath.resolve("edit-log.log").toString()
         val logFile = File(logFilePath)
 
         if (!logFile.exists()) {
