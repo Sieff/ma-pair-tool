@@ -3,6 +3,7 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.message.Message
 import com.github.sieff.mapairtool.model.message.MessageOrigin
+import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.util.Logger
@@ -13,6 +14,7 @@ import com.intellij.openapi.project.Project
 class AgentServiceContextImpl(val project: Project): AgentServiceContext, Observer<AppSettingsState.State> {
     private var agentService: AgentService? = StarterAgentServiceImpl(project)
     private val chatMessageService = project.service<ChatMessageService>()
+    private val cefBrowserService = project.service<CefBrowserService>()
     private var apiKey: String? = null
     private val logger = Logger(this.javaClass)
 
@@ -34,6 +36,7 @@ class AgentServiceContextImpl(val project: Project): AgentServiceContext, Observ
         apiKey = data.apiKey
 
         logger.info("Studygroup: ${data.studyGroup}")
+        cefBrowserService.updateStudyGroup(data.studyGroup)
         if (data.studyGroup == 1) {
             agentService = BaselineAgentServiceImpl(project)
             return

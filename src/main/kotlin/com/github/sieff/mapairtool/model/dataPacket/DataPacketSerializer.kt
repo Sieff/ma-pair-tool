@@ -14,6 +14,7 @@ object DataPacketSerializer {
             subclass(UpdateBundlePacket::class, UpdateBundlePacket.serializer())
             subclass(UpdateColorSchemePacket::class, UpdateColorSchemePacket.serializer())
             subclass(UpdateProcessingStatusPacket::class, UpdateProcessingStatusPacket.serializer())
+            subclass(UpdateStudyGroupPacket::class, UpdateStudyGroupPacket.serializer())
         }
     }
 

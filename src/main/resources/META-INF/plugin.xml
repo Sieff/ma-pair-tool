@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>com.github.sieff.mapairtool</id>
     <name>CPS Agent</name>
-    <vendor>Sieff</vendor>
+    <vendor>Steffen Schubert</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.plugins.markdown</depends>

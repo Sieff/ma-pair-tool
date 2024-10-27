@@ -17,18 +17,18 @@ object PromptInformation {
     var caretLine: Int = 0
 
     fun timeSinceLastUserEdit(): Long {
-        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastUserEdit)
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserEdit)
     }
 
     fun timeSinceLastUserInteraction(): Long {
-        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastUserInteraction)
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserInteraction)
     }
 
     fun timeSinceLastAgentMessage(): Long {
-        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastAgentMessage)
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastAgentMessage)
     }
 
     fun timeSinceLastChatInputEdit(): Long {
-        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - lastChatInputEdit)
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastChatInputEdit)
     }
 }
