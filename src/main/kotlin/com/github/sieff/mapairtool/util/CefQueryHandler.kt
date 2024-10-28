@@ -73,6 +73,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
     private fun onResetConversation() {
         logWriterService.logReset()
         chatMessageService.resetMessages()
+        PromptInformation.reset()
     }
 
     private fun onRequestColorScheme() {

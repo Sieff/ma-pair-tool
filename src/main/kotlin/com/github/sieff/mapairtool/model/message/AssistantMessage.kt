@@ -12,6 +12,4 @@ data class AssistantMessage (
     val emotion: Emotion,
     val reactions: List<String>,
     val proactive: Boolean,
-    val necessity: Int,
-    val thought: String
 ): BaseMessage()

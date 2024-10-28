@@ -1,6 +1,7 @@
 package com.github.sieff.mapairtool.services.agent
 
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
+import com.github.sieff.mapairtool.model.message.AssistantMessage
 import com.github.sieff.mapairtool.model.message.BaseMessage
 import com.intellij.openapi.project.Project
 
@@ -42,6 +43,7 @@ class PromptServiceImpl(val project: Project): PromptService {
             .addAgentResponseFormat()
             .addAgentRole()
             .addProactiveAgentTask()
+            .addKeyInformation()
             .addSummary()
             .addConversationHistory(1, false)
             .addSourceCode()
@@ -57,6 +59,24 @@ class PromptServiceImpl(val project: Project): PromptService {
     ): CompletionRequest {
         return PromptBuilder(project, model)
             .addSimilarityTask(firstMessage.message, secondMessage.message)
+            .build()
+    }
+
+    override fun getRelevancePrompt(
+        model: String,
+        message: AssistantMessage
+    ): CompletionRequest {
+        return PromptBuilder(project, model)
+            .addAgentRole()
+            .addRelevanceTask(message)
+            .addKeyInformation()
+            .addUserBoundaries()
+            .addUserMetrics()
+            .addSummary()
+            .addConversationHistory(1, false)
+            .addSourceCode()
+            .addConversationHistory(1, true)
+            .addRelevanceTask(message)
             .build()
     }
 

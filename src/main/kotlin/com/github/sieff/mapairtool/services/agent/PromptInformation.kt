@@ -8,6 +8,7 @@ object PromptInformation {
     var lastUserEdit: Long = getCurrentTime()
     var lastUserInteraction: Long = getCurrentTime()
     var lastAgentMessage: Long = getCurrentTime()
+    var lastProactiveMessageTry: Long = getCurrentTime()
     var facts: List<String> = ArrayList()
     var goals: List<String> = ArrayList()
     var challenges: List<String> = ArrayList()
@@ -16,19 +17,42 @@ object PromptInformation {
 
     var caretLine: Int = 0
 
-    fun timeSinceLastUserEdit(): Long {
+    fun secondsSinceLastUserEdit(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserEdit)
     }
 
-    fun timeSinceLastUserInteraction(): Long {
+    fun secondsSinceLastUserInteraction(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserInteraction)
     }
 
-    fun timeSinceLastAgentMessage(): Long {
+    fun secondsSinceLastAgentMessage(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastAgentMessage)
     }
 
-    fun timeSinceLastChatInputEdit(): Long {
+    fun secondsSinceLastChatInputEdit(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastChatInputEdit)
+    }
+
+    fun secondsSinceLastProactiveMessageTry(): Long {
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastProactiveMessageTry)
+    }
+
+    fun resetTimers() {
+        lastChatInputEdit = getCurrentTime()
+        lastUserEdit = getCurrentTime()
+        lastUserInteraction = getCurrentTime()
+        lastAgentMessage = getCurrentTime()
+    }
+
+    fun reset() {
+        lastChatInputEdit = getCurrentTime()
+        lastUserEdit = getCurrentTime()
+        lastUserInteraction = getCurrentTime()
+        lastAgentMessage = getCurrentTime()
+        facts = ArrayList()
+        goals = ArrayList()
+        challenges = ArrayList()
+        summary = ""
+        boundaries = ArrayList()
     }
 }

@@ -10,8 +10,9 @@ import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import kotlinx.coroutines.CoroutineScope
 
-class AgentServiceContextImpl(val project: Project): AgentServiceContext, Observer<AppSettingsState.State> {
+class AgentServiceContextImpl(val project: Project, private val coroutineScope: CoroutineScope): AgentServiceContext, Observer<AppSettingsState.State> {
     private var agentService: AgentService? = StarterAgentServiceImpl(project)
     private val chatMessageService = project.service<ChatMessageService>()
     private val cefBrowserService = project.service<CefBrowserService>()
@@ -36,13 +37,14 @@ class AgentServiceContextImpl(val project: Project): AgentServiceContext, Observ
         apiKey = data.apiKey
 
         logger.info("Studygroup: ${data.studyGroup}")
+        PromptInformation.resetTimers()
         cefBrowserService.updateStudyGroup(data.studyGroup)
         if (data.studyGroup == 1) {
             agentService = BaselineAgentServiceImpl(project)
             return
         }
         if (data.studyGroup == 2) {
-            agentService = CpsAgentServiceImpl(project)
+            agentService = CpsAgentServiceImpl(project, coroutineScope)
             return
         }
         agentService = StarterAgentServiceImpl(project)

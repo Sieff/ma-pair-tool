@@ -46,12 +46,18 @@ class CefBrowserServiceImpl(
 
     override fun requestToolWindowFocus() {
         SwingUtilities.invokeLater {
-            ToolWindowManager.getInstance(project).getToolWindow("Pair Tool")?.show()
+            ToolWindowManager.getInstance(project).getToolWindow("Assistant")?.show()
             toolWindowBrowser?.component?.requestFocus()
 
             val packet = RequestTextInputFocusPacket(DataPacketType.REQUEST_TEXT_INPUT_FOCUS)
 
             sendPacketToBrowser(toolWindowBrowser, packet)
+        }
+    }
+
+    override fun requestToolWindow() {
+        SwingUtilities.invokeLater {
+            ToolWindowManager.getInstance(project).getToolWindow("Assistant")?.show()
         }
     }
 

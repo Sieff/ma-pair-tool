@@ -1,6 +1,7 @@
 package com.github.sieff.mapairtool.services.agent
 
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
+import com.github.sieff.mapairtool.model.message.AssistantMessage
 import com.github.sieff.mapairtool.model.message.BaseMessage
 import com.intellij.openapi.Disposable
 
@@ -10,4 +11,5 @@ interface PromptService: Disposable {
     fun getSummaryAgentPrompt(model: String): CompletionRequest
     fun getProactiveAgentPrompt(model: String): CompletionRequest
     fun getSimilarityPrompt(model: String, firstMessage: BaseMessage, secondMessage: BaseMessage): CompletionRequest
+    fun getRelevancePrompt(model: String, message: AssistantMessage): CompletionRequest
 }
