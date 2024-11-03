@@ -9,4 +9,5 @@ interface LogWriterService {
     fun logSummary(summary: SummaryMessage)
     fun logReset()
     fun logEdit(type: String)
+    fun logSessionStart()
 }

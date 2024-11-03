@@ -8,5 +8,6 @@ class LogWriterStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
         val logWriterService = project.service<LogWriterService>()
         logWriterService.startNewLog()
+        logWriterService.logSessionStart()
     }
 }

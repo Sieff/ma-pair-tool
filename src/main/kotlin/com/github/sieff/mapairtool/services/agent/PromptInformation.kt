@@ -9,6 +9,7 @@ object PromptInformation {
     var lastUserInteraction: Long = getCurrentTime()
     var lastAgentMessage: Long = getCurrentTime()
     var lastProactiveMessageTry: Long = getCurrentTime()
+    var lastFileLog: Long = getCurrentTime()
     var facts: List<String> = ArrayList()
     var goals: List<String> = ArrayList()
     var challenges: List<String> = ArrayList()
@@ -19,6 +20,10 @@ object PromptInformation {
 
     fun secondsSinceLastUserEdit(): Long {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastUserEdit)
+    }
+
+    fun secondsSinceLastFileLog(): Long {
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastFileLog)
     }
 
     fun secondsSinceLastUserInteraction(): Long {

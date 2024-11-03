@@ -130,8 +130,8 @@ class PromptBuilder(project: Project, val model: String) {
             'emotion' will be your emotion towards the current situation, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONFUSED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'DISGUST', 'JOY'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 0, 1, 2 or 3 quick responses. You decide how many are needed.
-            They should be short messages consisting of an absolute maximum of 5 tokens. Shorter is better. 
-            They should be distinct messages. Fewer is better.
+            They should be short messages consisting of an absolute maximum of 5 tokens.
+            They should be distinct messages.
             'proactive' will always be the boolean false.
             Make sure that all JSON is properly formatted and only JSON is returned.
         """.trimIndent(), "system")

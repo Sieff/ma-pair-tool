@@ -12,6 +12,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Base64
+import kotlin.io.use
+import kotlin.text.toByteArray
 
 class LogWriterServiceImpl(val project: Project): LogWriterService {
     private val logger = Logger(this.javaClass)
@@ -62,9 +65,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            FileOutputStream(conversationLog!!, true).bufferedWriter().use { out ->
-                out.write(createLogMessage(message))
-            }
+            writeToLog(conversationLog!!, createLogMessage(message))
         }
     }
 
@@ -74,9 +75,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            FileOutputStream(conversationLog!!, true).bufferedWriter().use { out ->
-                out.write("${getCurrentTime()} - ${Json.encodeToString(summary)}\n")
-            }
+            writeToLog(conversationLog!!, "${getCurrentTime()},${Json.encodeToString(summary)}\n")
         }
     }
 
@@ -86,9 +85,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            FileOutputStream(conversationLog!!, true).bufferedWriter().use { out ->
-                out.write("${getCurrentTime()} - \"Conversation reset\"\n")
-            }
+            writeToLog(conversationLog!!, "${getCurrentTime()},\"Conversation reset\"\n")
         }
     }
 
@@ -97,9 +94,16 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
             startNewLog()
         }
         if (editLogIsReady()) {
-            FileOutputStream(editLog!!, true).bufferedWriter().use { out ->
-                out.write("${getCurrentTime()} - $type\n")
-            }
+            writeToLog(editLog!!, "${getCurrentTime()},$type\n")
+        }
+    }
+
+    override fun logSessionStart() {
+        if (!conversationLogIsReady()) {
+            startNewLog()
+        }
+        if (conversationLogIsReady()) {
+            writeToLog(conversationLog!!, "${getCurrentTime()},\"Started new session\"\n")
         }
     }
 
@@ -164,7 +168,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
     }
 
     private fun createLogMessage(message: BaseMessage): String {
-        var logEntry = "${getCurrentTime()} - "
+        var logEntry = "${getCurrentTime()},"
 
         if (message is AssistantMessage) {
             logEntry += MessageSerializer.json.encodeToString<AssistantMessage>(message)
@@ -175,5 +179,12 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
 
         logEntry += "\n"
         return logEntry
+    }
+
+    private fun writeToLog(log: File, message: String) {
+        val encodedMessage = Base64.getEncoder().encodeToString(message.toByteArray())
+        FileOutputStream(log, true).bufferedWriter().use { out ->
+            out.write(encodedMessage)
+        }
     }
 }
