@@ -6,6 +6,8 @@ import com.github.sieff.mapairtool.model.message.MessageOrigin
 import com.github.sieff.mapairtool.model.message.MessageSerializer
 import com.github.sieff.mapairtool.model.sourceCode.SourceCodeInfo
 import com.github.sieff.mapairtool.model.sourceCode.SourceCodeInfoList
+import com.github.sieff.mapairtool.services.ConversationInformation
+import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.sourceCode.SourceCodeService
 import com.intellij.openapi.components.service
@@ -207,7 +209,7 @@ class PromptBuilder(project: Project, val model: String) {
     fun addSummary(): PromptBuilder {
         val message = RequestMessage("""
             Here is a summary of the conversation thus far:
-            ${PromptInformation.summary}
+            ${ConversationInformation.summary}
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -281,7 +283,7 @@ class PromptBuilder(project: Project, val model: String) {
                 SourceCodeInfo(
                 "Currently active code file",
                 activeFile,
-                PromptInformation.caretLine)
+                ConversationInformation.caretLine)
             )
             message += "\n"
 
@@ -306,11 +308,11 @@ class PromptBuilder(project: Project, val model: String) {
     fun addKeyInformation(): PromptBuilder {
         val message = RequestMessage("""
             Facts for the current task:
-            ${PromptInformation.facts}
+            ${ConversationInformation.facts}
             Goals for the current task:
-            ${PromptInformation.goals}
+            ${ConversationInformation.goals}
             Challenges for the current task:
-            ${PromptInformation.challenges}
+            ${ConversationInformation.challenges}
         """.trimIndent(), "system")
         addMessage(message)
         return this
@@ -321,17 +323,17 @@ class PromptBuilder(project: Project, val model: String) {
             Relevant metrics to consider:
             Time (minutes) since the last user communication with the agent: ${
                 TimeUnit.SECONDS.toMinutes(
-                    PromptInformation.secondsSinceLastUserInteraction()
+                    ConversationInformation.secondsSinceLastUserMessage()
                 )
             };
             Time (minutes) since the last user edit in the code editor: ${
                 TimeUnit.SECONDS.toMinutes(
-                    PromptInformation.secondsSinceLastUserEdit()
+                    UserTelemetryInformation.secondsSinceLastUserEdit()
                 )
             };
             Time (minutes) since the agent (you) last communicated with the user: ${
                 TimeUnit.SECONDS.toMinutes(
-                    PromptInformation.secondsSinceLastAgentMessage()
+                    ConversationInformation.secondsSinceLastAgentMessage()
                 )
             };
             Amount of proactive messages without user response: ${chatMessageService.countUnansweredMessages()};
@@ -344,7 +346,7 @@ class PromptBuilder(project: Project, val model: String) {
     fun addUserBoundaries(): PromptBuilder {
         val message = RequestMessage("""
             Here are relevant boundaries, that the user communicated:
-            ${PromptInformation.boundaries}
+            ${ConversationInformation.boundaries}
         """.trimIndent(), "system")
 
         addMessage(message)

@@ -3,6 +3,8 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.*
 import com.github.sieff.mapairtool.model.message.*
+import com.github.sieff.mapairtool.services.ConversationInformation
+import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
@@ -50,7 +52,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
 
                 logger.debug("Emotion: ${assistantMessage.emotion}")
 
-                PromptInformation.lastAgentMessage = getCurrentTime()
+                ConversationInformation.lastAgentMessage = getCurrentTime()
                 invokeSummaryAgent()
             }
         }
@@ -70,17 +72,17 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
 
             val summaryMessage = getSummaryMessage(result.choices[0].message.content)
             if (summaryMessage != null) {
-                PromptInformation.summary = summaryMessage.summary
-                PromptInformation.facts = summaryMessage.facts
-                PromptInformation.goals = summaryMessage.goals
-                PromptInformation.challenges = summaryMessage.challenges
-                PromptInformation.boundaries = summaryMessage.boundaries
+                ConversationInformation.summary = summaryMessage.summary
+                ConversationInformation.facts = summaryMessage.facts
+                ConversationInformation.goals = summaryMessage.goals
+                ConversationInformation.challenges = summaryMessage.challenges
+                ConversationInformation.boundaries = summaryMessage.boundaries
 
-                logger.debug("Summary: ${PromptInformation.summary}")
-                logger.debug("Facts: ${PromptInformation.facts}")
-                logger.debug("Goals: ${PromptInformation.goals}")
-                logger.debug("Challenges: ${PromptInformation.challenges}")
-                logger.debug("Boundaries: ${PromptInformation.boundaries}")
+                logger.debug("Summary: ${ConversationInformation.summary}")
+                logger.debug("Facts: ${ConversationInformation.facts}")
+                logger.debug("Goals: ${ConversationInformation.goals}")
+                logger.debug("Challenges: ${ConversationInformation.challenges}")
+                logger.debug("Boundaries: ${ConversationInformation.boundaries}")
 
                 logWriterService.logSummary(summaryMessage)
             }
@@ -121,22 +123,22 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
             return false
         }
 
-        if (PromptInformation.secondsSinceLastAgentMessage() < 60) {
-            logger.info("Communicated recently, not invoking proactive message. (${PromptInformation.secondsSinceLastAgentMessage()} seconds ago)")
+        if (ConversationInformation.secondsSinceLastAgentMessage() < 60) {
+            logger.info("Communicated recently, not invoking proactive message. (${ConversationInformation.secondsSinceLastAgentMessage()} seconds ago)")
             return false
         }
 
-        if (PromptInformation.secondsSinceLastChatInputEdit() < 5) {
+        if (UserTelemetryInformation.secondsSinceLastChatInputEdit() < 5) {
             logger.info("User is typing in the chat.")
             return false
         }
 
-        if (PromptInformation.secondsSinceLastUserEdit() < 5) {
+        if (UserTelemetryInformation.secondsSinceLastUserEdit() < 5) {
             logger.info("User is typing in the editor.")
             return false
         }
 
-        if (PromptInformation.secondsSinceLastProactiveMessageTry() < 10) {
+        if (ConversationInformation.secondsSinceLastProactiveMessageTry() < 10) {
             logger.info("Tried to create proactive message recently.")
             return false
         }
@@ -158,7 +160,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
                     if (checkProactiveInvocationTiming()) {
                         cefBrowserService.requestToolWindow()
                         chatMessageService.addMessage(message)
-                        PromptInformation.lastAgentMessage = getCurrentTime()
+                        ConversationInformation.lastAgentMessage = getCurrentTime()
                     }
                 } else {
                     logger.info("Proactive message is not relevant enough.")
@@ -167,7 +169,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
                 logger.info("Proactive message too similar to last message.")
             }
 
-            PromptInformation.lastProactiveMessageTry = getCurrentTime()
+            ConversationInformation.lastProactiveMessageTry = getCurrentTime()
         }
 
     }

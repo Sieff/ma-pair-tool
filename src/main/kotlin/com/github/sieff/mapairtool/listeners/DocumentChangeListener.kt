@@ -1,6 +1,7 @@
 package com.github.sieff.mapairtool.listeners
 
-import com.github.sieff.mapairtool.services.agent.PromptInformation
+import com.github.sieff.mapairtool.services.ConversationInformation
+import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.agent.PromptService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
 import com.github.sieff.mapairtool.util.Logger
@@ -11,25 +12,19 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.remoteDev.tracing.getCurrentTime
-import java.io.File
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
 import kotlin.concurrent.thread
-import kotlin.io.path.pathString
-import kotlin.io.path.relativeTo
 
 class DocumentChangeListener(val project: Project) : ProjectManagerListener {
     private val promptService = project.service<PromptService>()
     private val logWriterService = project.service<LogWriterService>()
-    private val LOG_DIR = ".cpsLog"
     private val logger = Logger(DocumentChangeListener::class.java)
-    private val documentManager = PsiDocumentManager.getInstance(project)
+    private var lastFileLog = getCurrentTime()
 
     private val documentListener = DocumentListener { edit ->
-        PromptInformation.lastUserEdit = getCurrentTime()
+        UserTelemetryInformation.lastUserEdit = getCurrentTime()
 
         if (edit.oldFragment.isEmpty() && edit.newFragment.isNotEmpty()) {
             logWriterService.logEdit("add")
@@ -43,7 +38,7 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
     }
 
     private val caretListener = CaretListener { event ->
-        PromptInformation.caretLine = event.newPosition.line + 1
+        ConversationInformation.caretLine = event.newPosition.line + 1
     }
 
     private val registeredDocuments = mutableSetOf<Document>()
@@ -64,43 +59,25 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
                 if (!shouldLogFiles()) {
                     continue
                 }
-                PromptInformation.lastFileLog = getCurrentTime()
 
-                val logDirPath = project.basePath?.let { Paths.get(it, LOG_DIR, getCurrentTime().toString()) }
-                val projectBasePath = project.basePath?.let { Paths.get(it) }
-                if (logDirPath == null || projectBasePath == null || !File(projectBasePath.pathString).exists()) {
-                    logger.warn("Base path not set or directory doesn't exist.")
-                    continue
-                }
+                val timestamp = getCurrentTime()
+                val logDirectoryName = timestamp.toString()
+                lastFileLog = timestamp
 
                 SwingUtilities.invokeLater {
-                    for (document in editedDocuments) {
-                        val relativePath = getValidRelativePath(document, projectBasePath) ?: continue
-
-                        val filePath = Paths.get(logDirPath.pathString, relativePath.pathString)
-                        val fileDir = File(filePath.parent.pathString)
-                        fileDir.mkdirs()
-
-                        val fileCopy = File(filePath.pathString)
-                        fileCopy.createNewFile()
-                        fileCopy.writeText(document.text)
-                    }
+                    logWriterService.logFiles(logDirectoryName, editedDocuments)
                     editedDocuments.clear()
                 }
             }
         }
     }
 
-    private fun getValidRelativePath(document: Document, basePath: Path): Path? {
-        val documentPath = documentManager.getPsiFile(document)?.virtualFile?.path ?: ""
-        if (!Paths.get(documentPath).pathString.contains(basePath.pathString)) {
-            return null
-        }
-        return Paths.get(documentPath).relativeTo(basePath)
+    private fun shouldLogFiles(): Boolean {
+        return UserTelemetryInformation.secondsSinceLastUserEdit() > 5 && secondsSinceLastFileLog() > 15
     }
 
-    private fun shouldLogFiles(): Boolean {
-        return PromptInformation.secondsSinceLastUserEdit() > 5 && PromptInformation.secondsSinceLastFileLog() > 60
+    private fun secondsSinceLastFileLog(): Long {
+        return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastFileLog)
     }
 
     private fun registerListeners() {

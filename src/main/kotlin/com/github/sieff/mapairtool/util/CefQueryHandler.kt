@@ -2,7 +2,8 @@ package com.github.sieff.mapairtool.util
 
 import com.github.sieff.mapairtool.model.cefQuery.*
 import com.github.sieff.mapairtool.model.dataPacket.ColorScheme
-import com.github.sieff.mapairtool.services.agent.PromptInformation
+import com.github.sieff.mapairtool.services.ConversationInformation
+import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
@@ -67,13 +68,14 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
     }
 
     private fun onInputChangedEvent() {
-        PromptInformation.lastChatInputEdit = getCurrentTime()
+        UserTelemetryInformation.lastChatInputEdit = getCurrentTime()
     }
 
     private fun onResetConversation() {
         logWriterService.logReset()
         chatMessageService.resetMessages()
-        PromptInformation.reset()
+        ConversationInformation.reset()
+        UserTelemetryInformation.reset()
     }
 
     private fun onRequestColorScheme() {

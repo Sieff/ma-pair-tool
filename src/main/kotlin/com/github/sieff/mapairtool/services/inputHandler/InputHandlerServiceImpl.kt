@@ -3,7 +3,7 @@ package com.github.sieff.mapairtool.services.inputHandler
 import com.github.sieff.mapairtool.model.message.Message
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.agent.AgentServiceContext
-import com.github.sieff.mapairtool.services.agent.PromptInformation
+import com.github.sieff.mapairtool.services.ConversationInformation
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -18,7 +18,7 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
     override fun handleInput(input: Message) {
         logger.debug("New input: $input")
         chatMessageService.addMessage(input)
-        PromptInformation.lastUserInteraction = getCurrentTime()
+        ConversationInformation.lastUserMessage = getCurrentTime()
 
         agentServiceContext.invokeAgent()
     }
@@ -26,7 +26,7 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
     override fun handleWidgetInput(input: Message) {
         logger.debug("New widget input: $input")
         chatMessageService.addMessage(input)
-        PromptInformation.lastUserInteraction = getCurrentTime()
+        ConversationInformation.lastUserMessage = getCurrentTime()
 
         agentServiceContext.invokeAgent()
     }

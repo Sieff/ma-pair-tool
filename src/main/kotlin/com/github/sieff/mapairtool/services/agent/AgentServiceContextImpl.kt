@@ -3,6 +3,8 @@ package com.github.sieff.mapairtool.services.agent
 import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.message.Message
 import com.github.sieff.mapairtool.model.message.MessageOrigin
+import com.github.sieff.mapairtool.services.ConversationInformation
+import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsState
@@ -37,7 +39,8 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
         apiKey = data.apiKey
 
         logger.info("Studygroup: ${data.studyGroup}")
-        PromptInformation.resetTimers()
+        ConversationInformation.resetTimers()
+        UserTelemetryInformation.resetTimers()
         cefBrowserService.updateStudyGroup(data.studyGroup)
         if (data.studyGroup == 1) {
             agentService = BaselineAgentServiceImpl(project)

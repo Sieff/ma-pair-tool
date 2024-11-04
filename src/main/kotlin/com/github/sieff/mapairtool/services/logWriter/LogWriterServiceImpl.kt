@@ -4,7 +4,9 @@ import com.github.sieff.mapairtool.model.message.*
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.intellij.openapi.components.service
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.remoteDev.tracing.getCurrentTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -13,10 +15,13 @@ import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Base64
+import kotlin.io.path.pathString
+import kotlin.io.path.relativeTo
 import kotlin.io.use
 import kotlin.text.toByteArray
 
 class LogWriterServiceImpl(val project: Project): LogWriterService {
+    private val documentManager = PsiDocumentManager.getInstance(project)
     private val logger = Logger(this.javaClass)
     private val LOG_DIR = ".cpsLog"
 
@@ -105,6 +110,35 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         if (conversationLogIsReady()) {
             writeToLog(conversationLog!!, "${getCurrentTime()},\"Started new session\"\n")
         }
+    }
+
+    override fun logFiles(logDirectoryName: String, documents: Set<Document>) {
+        val logDirPath = project.basePath?.let { Paths.get(it, LOG_DIR, logDirectoryName) }
+        val projectBasePath = project.basePath?.let { Paths.get(it) }
+        if (logDirPath == null || projectBasePath == null || !File(projectBasePath.pathString).exists()) {
+            logger.warn("Base path not set or directory doesn't exist.")
+            return
+        }
+
+        for (document in documents) {
+            val virtualFile = documentManager.getPsiFile(document)?.virtualFile ?: continue
+            val relativePath = getValidRelativePath(virtualFile.path, projectBasePath) ?: continue
+
+            val filePath = Paths.get(logDirPath.pathString, relativePath.pathString)
+            val fileDir = File(filePath.parent.pathString)
+            fileDir.mkdirs()
+
+            val fileCopy = File(filePath.pathString)
+            fileCopy.createNewFile()
+            fileCopy.writeText(document.text)
+        }
+    }
+
+    private fun getValidRelativePath(documentPath: String, basePath: Path): Path? {
+        if (!Paths.get(documentPath).pathString.contains(basePath.pathString)) {
+            return null
+        }
+        return Paths.get(documentPath).relativeTo(basePath)
     }
 
     private fun conversationLogIsReady(): Boolean {
