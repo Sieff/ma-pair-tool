@@ -4,7 +4,6 @@ import com.github.sieff.mapairtool.services.ConversationInformation
 import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.agent.PromptService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
-import com.github.sieff.mapairtool.util.Logger
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
@@ -20,7 +19,6 @@ import kotlin.concurrent.thread
 class DocumentChangeListener(val project: Project) : ProjectManagerListener {
     private val promptService = project.service<PromptService>()
     private val logWriterService = project.service<LogWriterService>()
-    private val logger = Logger(DocumentChangeListener::class.java)
     private var lastFileLog = getCurrentTime()
 
     private val documentListener = DocumentListener { edit ->
@@ -73,7 +71,7 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
     }
 
     private fun shouldLogFiles(): Boolean {
-        return UserTelemetryInformation.secondsSinceLastUserEdit() > 5 && secondsSinceLastFileLog() > 15
+        return UserTelemetryInformation.secondsSinceLastUserEdit() > 5 && secondsSinceLastFileLog() > 60
     }
 
     private fun secondsSinceLastFileLog(): Long {
@@ -124,7 +122,6 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
                 event.editor.caretModel.removeCaretListener(caretListener)
                 registeredDocuments.remove(document)
             }
-            logger.info("Editor released: ${event.editor.virtualFile.path}")
         }
     }
 }

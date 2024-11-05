@@ -70,7 +70,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            writeToLog(conversationLog!!, createLogMessage(message))
+            writeToFile(conversationLog!!, createLogMessage(message))
         }
     }
 
@@ -80,7 +80,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            writeToLog(conversationLog!!, "${getCurrentTime()},${Json.encodeToString(summary)}\n")
+            writeToFile(conversationLog!!, "${getCurrentTime()},${Json.encodeToString(summary)}\n")
         }
     }
 
@@ -90,7 +90,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         if (conversationLogIsReady()) {
-            writeToLog(conversationLog!!, "${getCurrentTime()},\"Conversation reset\"\n")
+            writeToFile(conversationLog!!, "${getCurrentTime()},\"Conversation reset\"\n")
         }
     }
 
@@ -99,7 +99,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
             startNewLog()
         }
         if (editLogIsReady()) {
-            writeToLog(editLog!!, "${getCurrentTime()},$type\n")
+            writeToFile(editLog!!, "${getCurrentTime()},$type\n")
         }
     }
 
@@ -108,7 +108,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
             startNewLog()
         }
         if (conversationLogIsReady()) {
-            writeToLog(conversationLog!!, "${getCurrentTime()},\"Started new session\"\n")
+            writeToFile(conversationLog!!, "${getCurrentTime()},\"Started new session\"\n")
         }
     }
 
@@ -130,7 +130,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
 
             val fileCopy = File(filePath.pathString)
             fileCopy.createNewFile()
-            fileCopy.writeText(document.text)
+            writeToFile(fileCopy, document.text)
         }
     }
 
@@ -215,7 +215,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         return logEntry
     }
 
-    private fun writeToLog(log: File, message: String) {
+    private fun writeToFile(log: File, message: String) {
         val encodedMessage = Base64.getEncoder().encodeToString(message.toByteArray())
         FileOutputStream(log, true).bufferedWriter().use { out ->
             out.write(encodedMessage)
