@@ -5,9 +5,8 @@ import com.github.sieff.mapairtool.util.singletonPattern.Singleton
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
 
-@State(name = "com.github.sieff.mapairtool.settings.ApplicationSettingsState", storages = [Storage("MaPairToolSettings.xml")])
+@State(name = "com.github.sieff.mapairtool.settings.ApplicationSettingsState")
 @Service
 class AppSettingsState : PersistentStateComponent<AppSettingsState.State> {
 
