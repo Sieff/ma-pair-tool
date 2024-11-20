@@ -35,6 +35,6 @@ class AppSettingsComponent {
     var studyGroup: Int
         get() = studyGroupField.selectedItem as Int
         set(newItem) {
-            studyGroupField.selectedItem =  newItem
+            studyGroupField.selectedItem = newItem
         }
 }

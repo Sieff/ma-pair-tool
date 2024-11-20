@@ -4,8 +4,11 @@ import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletion
 import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletionSerializer
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
+import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.util.Logger
+import com.intellij.openapi.components.service
+import com.intellij.openapi.project.Project
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.BufferedReader
@@ -14,7 +17,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
-abstract class AgentService {
+abstract class AgentService(open val project: Project) {
     private val logger = Logger(this.javaClass)
 
     protected val url = URL("https://api.openai.com/v1/chat/completions")
@@ -53,7 +56,7 @@ abstract class AgentService {
 
         connection.setRequestProperty("Content-Type", "application/json")
         connection.setRequestProperty("Accept", "application/json")
-        connection.setRequestProperty("Authorization", "Bearer ${AppSettingsState.getInstance().state.apiKey}")
+        connection.setRequestProperty("Authorization", "Bearer ${project.service<AppSettingsState>().state.apiKey}")
 
         val body: String = Json.encodeToString(prompt)
         logger.debug("Request body:")

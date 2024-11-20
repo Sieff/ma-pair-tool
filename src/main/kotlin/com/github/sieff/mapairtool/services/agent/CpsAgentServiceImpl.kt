@@ -9,6 +9,7 @@ import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
+import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -21,7 +22,7 @@ import javax.swing.SwingUtilities
 import kotlin.concurrent.thread
 
 
-class CpsAgentServiceImpl(val project: Project, private val coroutineScope: CoroutineScope): AgentService() {
+class CpsAgentServiceImpl(override val project: Project, private val coroutineScope: CoroutineScope): AgentService(project) {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
     private val logWriterService = project.service<LogWriterService>()
@@ -60,7 +61,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
 
     private fun invokeSummaryAgent() {
         CompletableFuture.supplyAsync {
-            if (AppSettingsState.getInstance().state.apiKey == "") {
+            if (project.service<AppSettingsState>().state.apiKey == "") {
                 logger.warn("ApiKey not set, can't invoke summary agent.")
                 return@supplyAsync null
             }
@@ -92,7 +93,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
     private fun startProactiveAgent() {
         thread {
             while (true) {
-                if (AppSettingsState.getInstance().state.studyGroup != 2) {
+                if (project.service<AppSettingsState>().state.studyGroup != 2) {
                     logger.warn("Cps Agent not selected, shutting down proactive agent")
                     break
                 }
@@ -118,7 +119,7 @@ class CpsAgentServiceImpl(val project: Project, private val coroutineScope: Coro
     }
 
     private fun checkProactiveInvocationTiming(): Boolean {
-        if (AppSettingsState.getInstance().state.apiKey == "") {
+        if (project.service<AppSettingsState>().state.apiKey == "") {
             logger.warn("ApiKey not set, can't invoke proactive agent.")
             return false
         }

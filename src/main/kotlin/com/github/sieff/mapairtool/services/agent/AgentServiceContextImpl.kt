@@ -7,14 +7,17 @@ import com.github.sieff.mapairtool.services.ConversationInformation
 import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
+import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
+import com.github.sieff.mapairtool.settings.AppSettingsPublisher
 import com.github.sieff.mapairtool.settings.AppSettingsState
+import com.github.sieff.mapairtool.settings.AppState
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 
-class AgentServiceContextImpl(val project: Project, private val coroutineScope: CoroutineScope): AgentServiceContext, Observer<AppSettingsState.State> {
+class AgentServiceContextImpl(val project: Project, private val coroutineScope: CoroutineScope): AgentServiceContext, Observer<AppState> {
     private var agentService: AgentService? = StarterAgentServiceImpl(project)
     private val chatMessageService = project.service<ChatMessageService>()
     private val cefBrowserService = project.service<CefBrowserService>()
@@ -22,7 +25,7 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
     private val logger = Logger(this.javaClass)
 
     init {
-        AppSettingsState.getInstance().state.subscribe(this)
+        AppSettingsPublisher.subscribe(this)
     }
 
     override fun invokeAgent() {
@@ -35,7 +38,7 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
         }
     }
 
-    override fun notify(data: AppSettingsState.State) {
+    override fun notify(data: AppState) {
         apiKey = data.apiKey
 
         logger.info("Studygroup: ${data.studyGroup}")

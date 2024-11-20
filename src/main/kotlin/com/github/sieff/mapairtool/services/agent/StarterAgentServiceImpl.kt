@@ -9,7 +9,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 
 
-class StarterAgentServiceImpl(val project: Project): AgentService() {
+class StarterAgentServiceImpl(override val project: Project): AgentService(project) {
     private val chatMessageService = project.service<ChatMessageService>()
 
     private val logger = Logger(this.javaClass)

@@ -1,19 +1,16 @@
 package com.github.sieff.mapairtool.settings
 
 import com.github.sieff.mapairtool.ui.settings.AppSettingsComponent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.Nullable
-import java.util.*
 import javax.swing.JComponent
 
-
-class AppSettingsConfigurable : Configurable {
+class AppSettingsConfigurable(val project: Project) : Configurable {
 
     private lateinit var settingsComponent: AppSettingsComponent
-
-    private val settings: AppSettingsState
-        get() = AppSettingsState.getInstance()
 
     override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String {
         return "CPS Agent Settings"
@@ -30,23 +27,22 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val state: AppSettingsState.State =
-            Objects.requireNonNull(settings.state)
+        val state: AppState = project.service<AppSettingsState>().state
         return settingsComponent.apiKeyText != state.apiKey || settingsComponent.studyGroup != state.studyGroup
     }
 
 
     override fun apply() {
-        val state: AppSettingsState.State =
-            Objects.requireNonNull(settings.state)
-        state.apiKey = settingsComponent.apiKeyText
-        state.studyGroup = settingsComponent.studyGroup
+        project.service<AppSettingsState>().state.apiKey = settingsComponent.apiKeyText
+        project.service<AppSettingsState>().state.studyGroup = settingsComponent.studyGroup
+
+        AppSettingsPublisher.publish(project.service<AppSettingsState>().state)
     }
 
     override fun reset() {
-        val state: AppSettingsState.State =
-            Objects.requireNonNull(settings.state)
-        settingsComponent.apiKeyText = state.apiKey
-        settingsComponent.studyGroup = state.studyGroup
+        settingsComponent.apiKeyText = project.service<AppSettingsState>().state.apiKey
+        settingsComponent.studyGroup = project.service<AppSettingsState>().state.studyGroup
+
+        AppSettingsPublisher.publish(project.service<AppSettingsState>().state)
     }
 }

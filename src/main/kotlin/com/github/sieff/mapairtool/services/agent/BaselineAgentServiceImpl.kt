@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture
 import javax.swing.SwingUtilities
 
 
-class BaselineAgentServiceImpl(val project: Project): AgentService() {
+class BaselineAgentServiceImpl(override val project: Project): AgentService(project) {
     private val chatMessageService = project.service<ChatMessageService>()
     private val promptService = project.service<PromptService>()
     private val cefBrowserService = project.service<CefBrowserService>()

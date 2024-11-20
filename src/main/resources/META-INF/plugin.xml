@@ -11,7 +11,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.sieff.mapairtool.ui.toolWindow.ToolWindowFactory" id="Assistant" anchor="right" icon="/img/learn.svg"/>
-        <applicationConfigurable
+        <projectConfigurable
                 parentId="tools"
                 instance="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
                 id="com.github.sieff.mapairtool.settings.AppSettingsConfigurable"
