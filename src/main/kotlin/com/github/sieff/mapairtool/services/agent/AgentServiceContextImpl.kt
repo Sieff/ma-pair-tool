@@ -7,9 +7,7 @@ import com.github.sieff.mapairtool.services.ConversationInformation
 import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
-import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
 import com.github.sieff.mapairtool.settings.AppSettingsPublisher
-import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.settings.AppState
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
@@ -45,6 +43,8 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
         ConversationInformation.resetTimers()
         UserTelemetryInformation.resetTimers()
         cefBrowserService.updateStudyGroup(data.studyGroup)
+        cefBrowserService.updateSettingsStatus(data.apiKey.isNotBlank(), data.studyGroup == 1 || data.studyGroup == 2)
+
         if (data.studyGroup == 1) {
             agentService = BaselineAgentServiceImpl(project)
             return

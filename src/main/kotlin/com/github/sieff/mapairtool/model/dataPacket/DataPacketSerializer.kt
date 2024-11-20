@@ -10,7 +10,7 @@ object DataPacketSerializer {
             subclass(UpdateMessagesPacket::class, UpdateMessagesPacket.serializer())
             subclass(UpdateWidgetMessagePacket::class, UpdateWidgetMessagePacket.serializer())
             subclass(RequestTextInputFocusPacket::class, RequestTextInputFocusPacket.serializer())
-            subclass(UpdateLogStatusPacket::class, UpdateLogStatusPacket.serializer())
+            subclass(UpdatePluginStatusPacket::class, UpdatePluginStatusPacket.serializer())
             subclass(UpdateBundlePacket::class, UpdateBundlePacket.serializer())
             subclass(UpdateColorSchemePacket::class, UpdateColorSchemePacket.serializer())
             subclass(UpdateProcessingStatusPacket::class, UpdateProcessingStatusPacket.serializer())

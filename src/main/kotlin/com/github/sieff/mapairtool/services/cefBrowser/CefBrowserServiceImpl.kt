@@ -1,5 +1,6 @@
 package com.github.sieff.mapairtool.services.cefBrowser
 
+import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.dataPacket.*
 import com.github.sieff.mapairtool.model.message.ChatMessageState
 import com.github.sieff.mapairtool.util.Logger
@@ -21,6 +22,10 @@ class CefBrowserServiceImpl(
 
     override var toolWindowBrowser: JBCefBrowser? = null
     override var widgetBrowser: JBCefBrowser? = null
+
+    var logStatus: Boolean = false
+    var studyGroupStatus: Boolean = false
+    var apiKeyStatus: Boolean = false
 
     init {
         chatMessageService.subscribe(this)
@@ -62,7 +67,32 @@ class CefBrowserServiceImpl(
     }
 
     override fun updateLogStatus(status: Boolean) {
-        val packet = UpdateLogStatusPacket(status, DataPacketType.UPDATE_LOG_STATUS)
+        logStatus = status
+        updatePluginStatus()
+    }
+
+    override fun updateSettingsStatus(apiKeyReady: Boolean, studyGroupReady: Boolean) {
+        apiKeyStatus = apiKeyReady
+        studyGroupStatus = studyGroupReady
+        updatePluginStatus()
+    }
+
+    fun updatePluginStatus() {
+        var packet = UpdatePluginStatusPacket("", DataPacketType.UPDATE_PLUGIN_STATUS)
+        if (!logStatus) {
+            packet = UpdatePluginStatusPacket(Bundle.getMessage("status.noLog"), DataPacketType.UPDATE_PLUGIN_STATUS)
+        }
+
+        if (!apiKeyStatus) {
+            packet = UpdatePluginStatusPacket(Bundle.getMessage("status.noApiKey"), DataPacketType.UPDATE_PLUGIN_STATUS)
+        }
+
+        if (!studyGroupStatus) {
+            logger.debug(studyGroupStatus)
+            packet = UpdatePluginStatusPacket(Bundle.getMessage("status.noStudyGroup"), DataPacketType.UPDATE_PLUGIN_STATUS)
+        }
+
+        logger.debug(packet.status)
         sendPacketToBrowser(toolWindowBrowser, packet)
     }
 
