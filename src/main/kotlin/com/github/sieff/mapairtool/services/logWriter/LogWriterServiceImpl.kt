@@ -14,11 +14,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Base64
 import kotlin.io.path.pathString
 import kotlin.io.path.relativeTo
 import kotlin.io.use
-import kotlin.text.toByteArray
 
 class LogWriterServiceImpl(val project: Project): LogWriterService {
     private val documentManager = PsiDocumentManager.getInstance(project)
@@ -216,9 +214,8 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
     }
 
     private fun writeToFile(log: File, message: String) {
-        val encodedMessage = Base64.getEncoder().encodeToString(message.toByteArray())
         FileOutputStream(log, true).bufferedWriter().use { out ->
-            out.write(encodedMessage)
+            out.write(message)
         }
     }
 }
