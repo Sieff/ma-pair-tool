@@ -55,6 +55,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
+          gradle-version: 8.8
           gradle-home-cache-cleanup: true
 
       # Set environment variables
@@ -117,8 +118,9 @@ jobs:
 
       # Setup Gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v3
         with:
+          gradle-version: 8.8
           gradle-home-cache-cleanup: true
 
       # Run tests
@@ -201,7 +203,9 @@ jobs:
 
       # Setup Gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.8
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
