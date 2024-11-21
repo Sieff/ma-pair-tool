@@ -57,7 +57,7 @@ jobs:
         with:
           gradle-version: 8.8
           gradle-home-cache-cleanup: true
-          cache-strategy: none
+          cache-disabled: true
 
       # Set environment variables
       - name: Export Properties
@@ -123,7 +123,7 @@ jobs:
         with:
           gradle-version: 8.8
           gradle-home-cache-cleanup: true
-          cache-strategy: none
+          cache-disabled: true
 
       # Run tests
       - name: Run Tests
@@ -208,7 +208,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.8
-          cache-strategy: none
+          cache-disabled: true
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
