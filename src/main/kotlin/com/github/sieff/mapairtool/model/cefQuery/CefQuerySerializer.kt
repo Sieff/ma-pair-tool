@@ -9,6 +9,7 @@ object CefQuerySerializer {
         polymorphic(CefQuery::class) {
             subclass(InputQuery::class, InputQuery.serializer())
             subclass(WidgetInputQuery::class, WidgetInputQuery.serializer())
+            subclass(QuickReactionInputQuery::class, QuickReactionInputQuery.serializer())
             subclass(RequestMessagesQuery::class, RequestMessagesQuery.serializer())
             subclass(RequestToolWindowFocusQuery::class, RequestToolWindowFocusQuery.serializer())
             subclass(InputChangedEventQuery::class, InputChangedEventQuery.serializer())

@@ -1,6 +1,6 @@
 package com.github.sieff.mapairtool.services.inputHandler
 
-import com.github.sieff.mapairtool.model.message.Message
+import com.github.sieff.mapairtool.model.message.BaseMessage
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.agent.AgentServiceContext
 import com.github.sieff.mapairtool.services.ConversationInformation
@@ -15,16 +15,8 @@ class InputHandlerServiceImpl(project: Project): InputHandlerService {
 
     private val logger = Logger(this.javaClass)
 
-    override fun handleInput(input: Message) {
+    override fun handleInput(input: BaseMessage) {
         logger.debug("New input: $input")
-        chatMessageService.addMessage(input)
-        ConversationInformation.lastUserMessage = getCurrentTime()
-
-        agentServiceContext.invokeAgent()
-    }
-
-    override fun handleWidgetInput(input: Message) {
-        logger.debug("New widget input: $input")
         chatMessageService.addMessage(input)
         ConversationInformation.lastUserMessage = getCurrentTime()
 

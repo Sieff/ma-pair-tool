@@ -88,11 +88,9 @@ class CefBrowserServiceImpl(
         }
 
         if (!studyGroupStatus) {
-            logger.debug(studyGroupStatus)
             packet = UpdatePluginStatusPacket(Bundle.getMessage("status.noStudyGroup"), DataPacketType.UPDATE_PLUGIN_STATUS)
         }
 
-        logger.debug(packet.status)
         sendPacketToBrowser(toolWindowBrowser, packet)
     }
 

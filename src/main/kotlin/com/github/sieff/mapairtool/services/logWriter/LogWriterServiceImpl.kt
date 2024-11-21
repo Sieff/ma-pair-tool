@@ -208,6 +208,9 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         if (message is Message) {
             logEntry += MessageSerializer.json.encodeToString<Message>(message)
         }
+        if (message is QuickReactionMessage) {
+            logEntry += MessageSerializer.json.encodeToString<QuickReactionMessage>(message)
+        }
 
         logEntry += "\n"
         return logEntry

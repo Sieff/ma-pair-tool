@@ -9,6 +9,7 @@ object MessageSerializer {
         polymorphic(BaseMessage::class) {
             subclass(AssistantMessage::class, AssistantMessage.serializer())
             subclass(Message::class, Message.serializer())
+            subclass(QuickReactionMessage::class, QuickReactionMessage.serializer())
         }
     }
 

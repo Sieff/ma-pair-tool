@@ -39,6 +39,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
         when(query.queryType) {
             CefQueryType.INPUT -> onInput(request)
             CefQueryType.WIDGET_INPUT -> onWidgetInput(request)
+            CefQueryType.QUICK_REACTION_INPUT -> onQuickReactionInput(request)
             CefQueryType.REQUEST_TOOL_WINDOW_FOCUS -> onRequestToolWindowFocus()
             CefQueryType.REQUEST_MESSAGES -> onRequestMessages()
             CefQueryType.INPUT_CHANGED_EVENT -> onInputChangedEvent()
@@ -56,7 +57,12 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
 
     private fun onWidgetInput(request: String) {
         val query = CefQuerySerializer.json.decodeFromString<WidgetInputQuery>(request)
-        inputHandlerService.handleWidgetInput(query.message)
+        inputHandlerService.handleInput(query.message)
+    }
+
+    private fun onQuickReactionInput(request: String) {
+        val query = CefQuerySerializer.json.decodeFromString<QuickReactionInputQuery>(request)
+        inputHandlerService.handleInput(query.message)
     }
 
     private fun onRequestToolWindowFocus() {
