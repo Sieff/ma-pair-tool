@@ -61,7 +61,8 @@ class CpsAgentServiceImpl(override val project: Project, private val coroutineSc
 
     private fun invokeSummaryAgent() {
         CompletableFuture.supplyAsync {
-            if (project.service<AppSettingsState>().state.apiKey == "") {
+            val apiKey = project.service<AppSettingsState>().retrieveApiKey()
+            if (apiKey == null || apiKey == "") {
                 logger.warn("ApiKey not set, can't invoke summary agent.")
                 return@supplyAsync null
             }
@@ -119,7 +120,8 @@ class CpsAgentServiceImpl(override val project: Project, private val coroutineSc
     }
 
     private fun checkProactiveInvocationTiming(): Boolean {
-        if (project.service<AppSettingsState>().state.apiKey == "") {
+        val apiKey = project.service<AppSettingsState>().retrieveApiKey()
+        if (apiKey == null || apiKey == "") {
             logger.warn("ApiKey not set, can't invoke proactive agent.")
             return false
         }

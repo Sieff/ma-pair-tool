@@ -56,7 +56,7 @@ abstract class AgentService(open val project: Project) {
 
         connection.setRequestProperty("Content-Type", "application/json")
         connection.setRequestProperty("Accept", "application/json")
-        connection.setRequestProperty("Authorization", "Bearer ${project.service<AppSettingsState>().state.apiKey}")
+        connection.setRequestProperty("Authorization", "Bearer ${project.service<AppSettingsState>().retrieveApiKey()}")
 
         val body: String = Json.encodeToString(prompt)
         logger.debug("Request body:")

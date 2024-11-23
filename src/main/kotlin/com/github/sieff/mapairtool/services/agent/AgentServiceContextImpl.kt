@@ -8,6 +8,7 @@ import com.github.sieff.mapairtool.services.UserTelemetryInformation
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.settings.AppSettingsPublisher
+import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.settings.AppState
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.util.observerPattern.observer.Observer
