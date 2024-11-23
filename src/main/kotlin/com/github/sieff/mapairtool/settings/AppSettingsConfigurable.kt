@@ -33,14 +33,16 @@ class AppSettingsConfigurable(val project: Project) : Configurable {
 
 
     override fun apply() {
-        project.service<AppSettingsState>().state.apiKey = settingsComponent.apiKeyText
-        project.service<AppSettingsState>().state.studyGroup = settingsComponent.studyGroup
+        val newState = AppState()
+        newState.apiKey = settingsComponent.apiKeyText
+        newState.studyGroup = settingsComponent.studyGroup
+        project.service<AppSettingsState>().loadState(newState)
 
         AppSettingsPublisher.publish(project.service<AppSettingsState>().state)
     }
 
     override fun reset() {
-        settingsComponent.apiKeyText = project.service<AppSettingsState>().state.apiKey
+        settingsComponent.apiKeyText = project.service<AppSettingsState>().state.apiKey ?: ""
         settingsComponent.studyGroup = project.service<AppSettingsState>().state.studyGroup
 
         AppSettingsPublisher.publish(project.service<AppSettingsState>().state)

@@ -43,7 +43,7 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
         ConversationInformation.resetTimers()
         UserTelemetryInformation.resetTimers()
         cefBrowserService.updateStudyGroup(data.studyGroup)
-        cefBrowserService.updateSettingsStatus(data.apiKey.isNotBlank(), data.studyGroup == 1 || data.studyGroup == 2)
+        cefBrowserService.updateSettingsStatus(data.apiKey != null && data.apiKey!!.isNotBlank(), data.studyGroup == 1 || data.studyGroup == 2)
 
         if (data.studyGroup == 1) {
             agentService = BaselineAgentServiceImpl(project)

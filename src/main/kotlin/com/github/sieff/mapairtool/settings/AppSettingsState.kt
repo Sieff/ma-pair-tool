@@ -5,5 +5,5 @@ import com.intellij.openapi.components.State
 
 
 @Service(Service.Level.PROJECT)
-@State(name = "com.github.sieff.mapairtool.settings.AppSettingsState", storages = [Storage("cpsAgentSettings.xml")])
+@State(name = "cpsAgent.AppSettingsState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class AppSettingsState : SimplePersistentStateComponent<AppState>(AppState())
