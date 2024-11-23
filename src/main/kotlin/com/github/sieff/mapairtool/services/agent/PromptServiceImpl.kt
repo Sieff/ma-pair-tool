@@ -22,6 +22,7 @@ class PromptServiceImpl(val project: Project): PromptService {
 
     override fun getBaselineAgentPrompt(model: String): CompletionRequest {
         return PromptBuilder(project, model)
+            .addSourceCode()
             .addBasicConversationHistory()
             .build()
     }
