@@ -15,6 +15,7 @@ object CefQuerySerializer {
             subclass(InputChangedEventQuery::class, InputChangedEventQuery.serializer())
             subclass(ResetConversationQuery::class, ResetConversationQuery.serializer())
             subclass(RequestColorSchemeQuery::class, RequestColorSchemeQuery.serializer())
+            subclass(RequestStudyGroupQuery::class, RequestStudyGroupQuery.serializer())
         }
     }
 

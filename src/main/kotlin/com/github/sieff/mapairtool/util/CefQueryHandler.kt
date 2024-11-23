@@ -8,6 +8,7 @@ import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.inputHandler.InputHandlerService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
+import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
@@ -20,6 +21,7 @@ import org.cef.handler.CefMessageRouterHandlerAdapter
 class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
     private val inputHandlerService = project.service<InputHandlerService>()
     private val cefBrowserService = project.service<CefBrowserService>()
+    private val appSettingsState = project.service<AppSettingsState>()
     private val chatMessageService = project.service<ChatMessageService>()
     private val logWriterService = project.service<LogWriterService>()
 
@@ -45,6 +47,7 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
             CefQueryType.INPUT_CHANGED_EVENT -> onInputChangedEvent()
             CefQueryType.RESET_CONVERSATION -> onResetConversation()
             CefQueryType.REQUEST_COLOR_SCHEME -> onRequestColorScheme()
+            CefQueryType.REQUEST_STUDY_GROUP -> onRequestStudyGroup()
         }
 
         return true
@@ -90,5 +93,9 @@ class CefQueryHandler(project: Project): CefMessageRouterHandlerAdapter() {
         } else {
             cefBrowserService.updateColorScheme(ColorScheme.LIGHT)
         }
+    }
+
+    private fun onRequestStudyGroup() {
+        cefBrowserService.updateStudyGroup(appSettingsState.state.studyGroup)
     }
 }
