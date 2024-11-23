@@ -9,7 +9,6 @@ import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.chatMessage.ChatMessageService
 import com.github.sieff.mapairtool.services.logWriter.LogWriterService
-import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -93,12 +92,18 @@ class CpsAgentServiceImpl(override val project: Project, private val coroutineSc
     private fun startProactiveAgent() {
         thread {
             while (true) {
+                Thread.sleep(proactiveInvocationInterval)
+
+                if (stopped) {
+                    logger.warn("Cps Agent stopped, shutting down proactive agent")
+                    break
+                }
+
                 if (project.service<AppSettingsState>().state.studyGroup != 2) {
                     logger.warn("Cps Agent not selected, shutting down proactive agent")
                     break
                 }
 
-                Thread.sleep(proactiveInvocationInterval)
                 if (!checkProactiveInvocationTiming()) {
                     continue
                 }

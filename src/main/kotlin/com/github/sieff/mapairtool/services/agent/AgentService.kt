@@ -4,7 +4,6 @@ import com.github.sieff.mapairtool.Bundle
 import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletion
 import com.github.sieff.mapairtool.model.chatCompletion.ChatCompletionSerializer
 import com.github.sieff.mapairtool.model.completionRequest.CompletionRequest
-import com.github.sieff.mapairtool.settings.AppSettingsConfigurable
 import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.util.Logger
 import com.intellij.openapi.components.service
@@ -23,8 +22,14 @@ abstract class AgentService(open val project: Project) {
     protected val url = URL("https://api.openai.com/v1/chat/completions")
     protected val model = "gpt-4o-mini"
 
+    protected var stopped = false
+
     abstract fun invokeMainAgent()
     protected abstract fun getErrorResponse(message: String): ChatCompletion
+
+    fun stop() {
+        stopped = true
+    }
 
     protected fun getAiCompletion(prompt: CompletionRequest): ChatCompletion {
         try {

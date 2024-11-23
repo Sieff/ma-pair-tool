@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/Sieff/ma-pair-tool/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/25434-cps-agent.svg)](https://plugins.jetbrains.com/plugin/25434-cps-agent)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/25434-cps-agent)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/25434-cps-agent.svg)](https://plugins.jetbrains.com/plugin/25434-cps-agent)
 
 ## Template ToDo list
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.

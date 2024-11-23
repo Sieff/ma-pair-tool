@@ -2,6 +2,7 @@ package com.github.sieff.mapairtool.ui.toolWindow
 
 import com.github.sieff.mapairtool.util.Logger
 import com.github.sieff.mapairtool.services.cefBrowser.CefBrowserService
+import com.github.sieff.mapairtool.settings.AppSettingsState
 import com.github.sieff.mapairtool.ui.Frontend
 import com.github.sieff.mapairtool.util.CefQueryHandler
 import com.intellij.openapi.components.service
@@ -22,6 +23,7 @@ class ToolWindowFactory : ToolWindowFactory {
         val myToolWindow = MyToolWindow(toolWindow)
         val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
         toolWindow.contentManager.addContent(content)
+        toolWindow.project.service<AppSettingsState>()
     }
 
     override fun shouldBeAvailable(project: Project) = true

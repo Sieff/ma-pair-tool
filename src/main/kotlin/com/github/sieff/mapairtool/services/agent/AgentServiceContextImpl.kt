@@ -46,13 +46,21 @@ class AgentServiceContextImpl(val project: Project, private val coroutineScope: 
         cefBrowserService.updateSettingsStatus(data.apiKey != null && data.apiKey!!.isNotBlank(), data.studyGroup == 1 || data.studyGroup == 2)
 
         if (data.studyGroup == 1) {
+            if (agentService is BaselineAgentServiceImpl) return
+
+            agentService?.stop()
             agentService = BaselineAgentServiceImpl(project)
             return
         }
         if (data.studyGroup == 2) {
+            if (agentService is CpsAgentServiceImpl) return
+
+            agentService?.stop()
             agentService = CpsAgentServiceImpl(project, coroutineScope)
             return
         }
+
+        agentService?.stop()
         agentService = StarterAgentServiceImpl(project)
     }
 }
