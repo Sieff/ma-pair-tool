@@ -157,9 +157,8 @@ class PromptBuilder(project: Project, val model: String) {
 
     fun addProactiveAgentTask(): PromptBuilder {
         val message = RequestMessage("""
-            With this request you have the opportunity to proactively communicate with the user.
-            In the conversation history, a proactive message is a message, where the proactive flag is set to true.
-            Provided are information about the user and the current conversation history.
+            With this request you can proactively communicate with the user.
+            Use the current code, known requirements and other context to generate a meaningful message.
             You can only speak in JSON.
             Do not generate output that isn’t in properly formatted JSON.
             Return a json Object with the following interface: {origin: string, phase: string, message: string, emotion: string, reactions: string[], proactive: boolean}.
@@ -167,29 +166,24 @@ class PromptBuilder(project: Project, val model: String) {
             'phase' is the current phase within the creative problem solving process. One of 'CLARIFY', 'IDEA', 'DEVELOP', 'IMPLEMENT'.
             'message' will be your proactive message, that you want to show the user.
             Possible proactive messages:
-                - Ask a question about the current thoughts or actions of the user.
-                - Ask a clarification question with respect to the current phase of the creative problem-solving process.
-                - Propose one next step. Don't overwhelm the user with possible future tasks, just one next action.
-                - Make a comment about the code the user is working on.
-                - Encourage the user or provide reinforcement by supporting the user emotionally.
-            Examples for questions about the user:
-                - "What are you currently thinking about?"
-                - "What are you doing right now?"
-                - "What are our next steps?"
-                - "Do you need help with [x]?"
-            Examples for clarification questions:
-                - "I noticed [x], am I right to assume [y]?"
-                - "Is it correct, that [x]?"
-                - "I'm missing some facts about [x], can you tell me [y]?"
-            Examples for commenting source code:
-                - "You may simplify this code [insert reference to code or code example]"
-                - "I think there is a logic error here [insert reference to code or code example]"
-                - "Maybe you can apply [insert programming concept] to [problem]"
-            Examples for encouragement or reinforcement:
-                - "[x] is a great idea!"
+                - Comment about the progress of the user in the task based on the code.
+                - Comment about how the code doesnt fit or does fit the known requirements.
+                - Comment about (logical) errors in the code.
+                - Propose a next step based on known requirements and goals. Just one next step. Testing is not a next step.
+            Examples for Comment about the progress of the user in the task based on the code:
                 - "We are making great progress towards [x]!"
-                - "This is really getting somewhere!"
-                
+                - "I see you already finished [x], now we only have to complete [y] to finish this step."
+                - "Do you need help with completing [x]?"
+            Examples for Comment about how the code doesnt fit or does fit the known requirements:
+                - "I think we are missing the point here. [x] will not really work with requirement [y]."
+                - "[code x] captures [requirement y] really well. With that we will be able to [z]."
+                - "Although [x] might work for now, I think we should switch it to [y], because of [requirement z], where will will have to [w]."
+            Examples for Comment about (logical) errors in the code.:
+                - "You may simplify this code [insert reference to code or code example]"
+                - "There might be a logic error here [insert reference to code or code example]. [Explanation]"
+            Examples for Propose a next step based on known requirements and goals:
+                - "Are you ready with [x]? Then we should move on to [y]."
+                - "The code [insert reference] seems to be ready for [current goal x], are we ready to approach [next goal y]."
             'emotion' will be your emotion towards the current situation, it can be one of 'HAPPY', 'BORED', 'PERPLEXED', 'CONFUSED', 'CONCENTRATED', 'DEPRESSED', 'SURPRISED', 'ANGRY', 'ANNOYED', 'SAD', 'FEARFUL', 'ANTICIPATING', 'DISGUST', 'JOY'.
             'reactions' will be an array of simple, short responses for the user to respond to your message.
             There may be 3, 2, 1 or 0 quick responses. You decide how many are needed.
