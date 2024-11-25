@@ -15,10 +15,12 @@ object PopupInvoker {
         if (action != null) {
             // Create an AnActionEvent with the appropriate context
             val dataContext = DataManager.getInstance().getDataContext(WindowManager.getInstance().getFrame(project))
-            val event = AnActionEvent.createFromDataContext(ActionPlaces.UNKNOWN, null, dataContext)
+            // TODO: Replace deprecated API
+            //val event = AnActionEvent.createFromDataContext(ActionPlaces.UNKNOWN, null, dataContext)
 
             // Invoke the action
-            action.actionPerformed(event)
+            // TODO: Replace deprecated API
+            //action.actionPerformed(event)
         }
     }
 }
