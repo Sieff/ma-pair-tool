@@ -149,6 +149,11 @@ class CpsAgentServiceImpl(override val project: Project, private val coroutineSc
             return false
         }
 
+        if (ConversationInformation.minutesSinceConversationStart() < 5) {
+            logger.info("Conversation start is shorter than 5 minutes ago.")
+            return false
+        }
+
         return true
     }
 

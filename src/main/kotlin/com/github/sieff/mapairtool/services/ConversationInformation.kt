@@ -7,6 +7,7 @@ object ConversationInformation {
     var lastUserMessage: Long = getCurrentTime()
     var lastAgentMessage: Long = getCurrentTime()
     var lastProactiveMessageTry: Long = getCurrentTime()
+    var conversationStart: Long = getCurrentTime()
     var facts: List<String> = ArrayList()
     var goals: List<String> = ArrayList()
     var challenges: List<String> = ArrayList()
@@ -28,12 +29,18 @@ object ConversationInformation {
         return TimeUnit.NANOSECONDS.toSeconds(getCurrentTime() - lastProactiveMessageTry)
     }
 
+    fun minutesSinceConversationStart(): Long {
+        return TimeUnit.NANOSECONDS.toMinutes(getCurrentTime() - conversationStart)
+    }
+
     fun resetTimers() {
         lastUserMessage = getCurrentTime()
         lastAgentMessage = getCurrentTime()
+        conversationStart = getCurrentTime()
     }
 
     fun reset() {
+        conversationStart = getCurrentTime()
         lastUserMessage = getCurrentTime()
         lastAgentMessage = getCurrentTime()
         facts = ArrayList()
