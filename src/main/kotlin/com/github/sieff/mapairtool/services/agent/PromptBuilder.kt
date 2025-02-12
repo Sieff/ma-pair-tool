@@ -165,7 +165,7 @@ class PromptBuilder(project: Project, val model: String) {
             'message' will be your proactive message, that you want to show the user.
             Use these examples to inspire your proactive message. Don't apply them literally.
             You are not limited to these examples.
-            Choose the one that is most applicable to the current context.
+            Choose the one that is most applicable to the current context or randomly using python.
             As a pair programming partner you should critique the solution when needed.
             Possible proactive messages:
                 - Discuss suitability of a solution with requirements.
