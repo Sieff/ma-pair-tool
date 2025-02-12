@@ -206,7 +206,7 @@ class CpsAgentServiceImpl(override val project: Project, private val coroutineSc
     }
 
     private fun getErrorMessage(message: String): AssistantMessage {
-        return AssistantMessage(MessageOrigin.AGENT, Phase.CLARIFY, message, Emotion.SAD, ArrayList(), false)
+        return AssistantMessage(MessageOrigin.AGENT, Phase.SERVICE, message, Emotion.SAD, ArrayList(), false)
     }
 
     private fun getAssistantMessage(content: String): AssistantMessage {

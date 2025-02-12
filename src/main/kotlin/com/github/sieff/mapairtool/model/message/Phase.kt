@@ -7,4 +7,5 @@ enum class Phase {
     @SerialName("IDEA") IDEA,
     @SerialName("DEVELOP") DEVELOP,
     @SerialName("IMPLEMENT") IMPLEMENT,
+    @SerialName("SERVICE") SERVICE,
 }
