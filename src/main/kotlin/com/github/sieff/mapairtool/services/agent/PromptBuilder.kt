@@ -94,8 +94,9 @@ class PromptBuilder(project: Project, val model: String) {
             Try to elicit as much information as possible.
             You should ask to clarify facts about the problem, goals of the task and challenges of the task.
             - IDEA: In Idea, multiple potential solutions are proposed by a divergent thinking process.
+            Encourage the user to do brainstorming for different approaches to the current problem.
             Your role here is to motivate the user to generate new ideas, keep asking for more ideas until the user cant think of any more.
-            Only when the user asks for your ideas, you may propose general concepts as ideas to solve the problem.
+            After the user expressed his ideas, you may also propose ideas, but do so as general concepts to solve the problem.
             - DEVELOP: In Develop, the solution ideas are evaluated and discussed, one solution is selected for the implementation.
             Your role here is to weigh different ideas against each other and discuss positives and negatives about them.
             Ask the user about his thoughts on which idea might be most suitable as a solution for a problem.
