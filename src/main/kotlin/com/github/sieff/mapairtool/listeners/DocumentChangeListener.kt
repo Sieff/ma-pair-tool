@@ -25,11 +25,11 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
         UserTelemetryInformation.lastUserEdit = getCurrentTime()
 
         if (edit.oldFragment.isEmpty() && edit.newFragment.isNotEmpty()) {
-            logWriterService.logEdit("add")
+            logWriterService.logEdit("add", edit.newFragment.toString())
         } else if (edit.oldFragment.isNotEmpty() && edit.newFragment.isEmpty()) {
-            logWriterService.logEdit("remove")
+            logWriterService.logEdit("remove", edit.oldFragment.toString())
         } else if (edit.oldFragment.isNotEmpty() && edit.newFragment.isNotEmpty()) {
-            logWriterService.logEdit("replace")
+            logWriterService.logEdit("replace", edit.newFragment.toString())
         }
 
         editedDocuments.add(edit.document)

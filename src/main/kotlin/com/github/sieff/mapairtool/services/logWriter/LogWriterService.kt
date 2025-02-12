@@ -9,7 +9,7 @@ interface LogWriterService {
     fun logMessage(message: BaseMessage)
     fun logSummary(summary: SummaryMessage)
     fun logReset()
-    fun logEdit(type: String)
+    fun logEdit(type: String, fragment: String)
     fun logSessionStart()
     fun logFiles(logDirectoryName: String, documents: Set<Document>)
 }

@@ -92,12 +92,14 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
     }
 
-    override fun logEdit(type: String) {
+    override fun logEdit(type: String, fragment: String) {
         if (!editLogIsReady()) {
             startNewLog()
         }
+
+        val editedFragment = fragment.replace("\n", "\\n").replace("\"", "\"\"")
         if (editLogIsReady()) {
-            writeToFile(editLog!!, "${getCurrentTime()},$type\n")
+            writeToFile(editLog!!, "\"${getCurrentTime()}\",\"$type\",\"$editedFragment\"\n")
         }
     }
 
