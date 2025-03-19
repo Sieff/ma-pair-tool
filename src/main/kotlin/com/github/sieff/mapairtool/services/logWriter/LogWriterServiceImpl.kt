@@ -97,7 +97,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
             startNewLog()
         }
 
-        val editedFragment = fragment.replace("\\n", "%%%&NEWLINE&%%%").replace("\n", "\\n").replace("\"", "\"\"")
+        val editedFragment = fragment.replace("\\n", "%%%NEWLINE%%%").replace("\n", "\\n").replace("\"", "\"\"")
         if (editLogIsReady()) {
             writeToFile(editLog!!, "\"${getCurrentTime()}\",\"$type\",\"$editedFragment\"\n")
         }
