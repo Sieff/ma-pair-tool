@@ -98,6 +98,7 @@ class LogWriterServiceImpl(val project: Project): LogWriterService {
         }
 
         val editedFragment = fragment
+            .replace("\\n", "%%%NEWLINE%%%")
             .replace("\n", "\\n")
             .replace("\"", "\"\"")
 

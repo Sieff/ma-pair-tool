@@ -82,8 +82,8 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
         val editors = EditorFactory.getInstance().allEditors
         editors.forEach { editor ->
             if (editor.document !in registeredDocuments) {
-                editor.document.addDocumentListener(documentListener)
-                editor.caretModel.addCaretListener(caretListener)
+                editor.document.addDocumentListener(documentListener, project)
+                editor.caretModel.addCaretListener(caretListener, project)
                 registeredDocuments.add(editor.document)
             }
         }
@@ -109,8 +109,8 @@ class DocumentChangeListener(val project: Project) : ProjectManagerListener {
         override fun editorCreated(event: EditorFactoryEvent) {
             val document = event.editor.document
             if (document !in registeredDocuments) {
-                document.addDocumentListener(documentListener)
-                event.editor.caretModel.addCaretListener(caretListener)
+                document.addDocumentListener(documentListener, project)
+                event.editor.caretModel.addCaretListener(caretListener, project)
                 registeredDocuments.add(document)
             }
         }
